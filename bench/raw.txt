@@ -1,12 +1,12 @@
 JSON document: 55.9 KiB
-json parse                        0.488 ms/op       2048.2 ops/s  (500 iterations)
-json stringify                    0.000 ms/op    6420545.7 ops/s  (500 iterations)
-atlas ascent                      2.470 ms/op        404.8 ops/s  (10 iterations)
-atlas full mission              263.499 ms/op          3.8 ops/s  (5 iterations)
+json parse                        0.608 ms/op       1645.0 ops/s  (500 iterations)
+json stringify                    0.000 ms/op    6458529.8 ops/s  (500 iterations)
+atlas ascent                      2.481 ms/op        403.0 ops/s  (10 iterations)
+atlas full mission              277.765 ms/op          3.6 ops/s  (5 iterations)
 successful mission iterations: 5
-tli plan (98 evals)             259.973 ms/op          3.8 ops/s  (5 iterations)
-nbody 30-day conservation        13.142 ms/op         76.1 ops/s  (2 iterations)
+tli plan (98 evals)             261.319 ms/op          3.8 ops/s  (5 iterations)
+nbody 30-day conservation        12.895 ms/op         77.5 ops/s  (2 iterations)
 conservation steps executed: 35722
-dormand-prince harmonic          3718.1 ksteps/s (26.4 ms, 98080 steps)
-rng u64                           0.000 ms/op  714711478.1 ops/s  (1000000 iterations)
-rocket parse                      0.013 ms/op      79515.7 ops/s  (2000 iterations)
+dormand-prince harmonic          3731.2 ksteps/s (26.3 ms, 98080 steps)
+rng u64                           0.000 ms/op  694283409.3 ops/s  (1000000 iterations)
+rocket parse                      0.013 ms/op      76375.5 ops/s  (2000 iterations)

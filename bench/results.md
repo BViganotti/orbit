@@ -9,15 +9,15 @@ Environment for this run:
 
 | Benchmark | ms/op | ops/s | Iterations |
 |---|---:|---:|---:|
-| JSON parse, 55.9 KiB | 0.488 | 2,048 | 500 |
-| JSON stringify, small object | <0.001 | 6,420,546 | 500 |
-| Atlas ascent | 2.470 | 405 | 10 |
-| Atlas full mission | 263.499 | 3.8 | 5 |
-| TLI plan, 98 evaluations | 259.973 | 3.8 | 5 |
-| 30-day coupled n-body conservation | 13.142 | 76.1 | 2 |
-| Dormand–Prince harmonic | 3,718 ksteps/s | — | 98,080 steps |
-| RNG u64 | <0.001 | 714,711,478 | 1,000,000 |
-| Rocket parse + validate | 0.013 | 79,516 | 2,000 |
+| JSON parse, 55.9 KiB | 0.608 | 1,645 | 500 |
+| JSON stringify, small object | <0.001 | 6,458,530 | 500 |
+| Atlas ascent | 2.481 | 403 | 10 |
+| Atlas full mission | 277.765 | 3.6 | 5 |
+| TLI plan, 98 evaluations | 261.319 | 3.8 | 5 |
+| 30-day coupled n-body conservation | 12.895 | 77.5 | 2 |
+| Dormand–Prince harmonic | 3,731 ksteps/s | — | 98,080 steps |
+| RNG u64 | <0.001 | 694,283,409 | 1,000,000 |
+| Rocket parse + validate | 0.013 | 76,376 | 2,000 |
 
 All 5 full-mission iterations succeeded. The conservation benchmark executed
 35,722 adaptive steps for two 30-day runs (17,861 per run).
