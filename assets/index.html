@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Orbit — Rocket Garage and Mission Planner</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">◎</span>
+    <div>
+      <div class="brand-name">ORBIT</div>
+      <div class="brand-sub">rocket garage · mission planner</div>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Workspace">
+    <button class="tab-btn active" data-tab="garage" role="tab" aria-selected="true">Garage</button>
+    <button class="tab-btn" data-tab="mission" role="tab" aria-selected="false">Mission</button>
+    <button class="tab-btn" data-tab="plots" role="tab" aria-selected="false">Plots</button>
+    <button class="tab-btn" data-tab="events" role="tab" aria-selected="false">Events</button>
+  </nav>
+  <div class="connection" id="connection"><span class="dot"></span><span id="connection-text">connecting</span></div>
+</header>
+
+<div class="token-warning" id="token-warning" hidden>
+  This Studio needs the launch URL printed by <code>orbit</code>, including its token.
+</div>
+
+<main>
+<section class="tab-panel active" id="tab-garage" role="tabpanel">
+  <div class="panel-grid">
+    <div class="column">
+      <div class="card">
+        <div class="card-head">
+          <h2>Vehicle library</h2>
+          <span class="hint">fictional, original designs</span>
+        </div>
+        <div class="preset-list" id="preset-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h2>Mass &amp; performance</h2>
+          <span class="pill" id="garage-status">idle</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><span>Liftoff mass</span><strong id="summary-liftoff">—</strong></div>
+          <div class="stat"><span>Payload fraction</span><strong id="summary-payload">—</strong></div>
+          <div class="stat"><span>Ideal delta-v</span><strong id="summary-dv">—</strong></div>
+          <div class="stat"><span>Liftoff TWR</span><strong id="summary-twr">—</strong></div>
+          <div class="stat"><span>Propellant</span><strong id="summary-prop">—</strong></div>
+          <div class="stat"><span>Burn time</span><strong id="summary-burn">—</strong></div>
+        </div>
+        <div class="checks" id="checks"></div>
+      </div>
+      <div class="card compact">
+        <div class="card-head"><h2>Conservation lab</h2><span class="hint">full 4-body integrator</span></div>
+        <p class="muted">Integrates Earth, Moon, Sun and a test spacecraft with mutual gravity for 30 days, then compares total energy and barycentric momentum.</p>
+        <button class="btn secondary" id="conservation-btn">Run 30-day conservation check</button>
+        <div class="mono small" id="conservation-result">not run</div>
+      </div>
+    </div>
+
+    <div class="column">
+      <div class="card">
+        <div class="card-head">
+          <h2>Rocket editor</h2>
+          <div class="row-actions">
+            <button class="btn ghost" id="reset-rocket">Reset preset</button>
+            <button class="btn" id="validate-btn">Validate</button>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label>Name<input id="rocket-name" maxlength="80" autocomplete="off"></label>
+          <label>Payload mass (kg)<input id="rocket-payload" type="number" min="0" step="100"></label>
+          <label>Drag area (m²)<input id="rocket-area" type="number" min="0.1" step="0.1"></label>
+          <label>Drag coefficient<input id="rocket-cd" type="number" min="0.02" max="5" step="0.01"></label>
+        </div>
+        <div class="stage-toolbar">
+          <h3>Stages <span class="hint">index 0 fires first</span></h3>
+          <button class="btn ghost" id="add-stage">+ Add stage</button>
+        </div>
+        <div class="stages" id="stages"></div>
+        <div class="callout small" id="editor-note">Changes are validated against the server before a mission runs.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-mission" role="tabpanel">
+  <div class="panel-grid mission-grid">
+    <div class="column">
+      <div class="card">
+        <div class="card-head"><h2>Mission script</h2><span class="hint">deterministic catalogue</span></div>
+        <label class="full">Catalogue
+          <select id="script-select"></select>
+        </label>
+        <p class="muted small" id="script-description"></p>
+        <div class="form-grid">
+          <label>Lunar altitude (km)<input id="lunar-altitude" type="number" min="10" max="1000" step="1" value="100"></label>
+          <label>Parking target (km)<input id="parking-altitude" type="number" min="80" max="2000" step="10" value="400"></label>
+          <label>Epoch (days)<input id="epoch-days" type="number" step="0.1" value="0"></label>
+          <label>Moon phase (°)<input id="moon-phase" type="number" step="1" value="0"></label>
+          <label>Sun phase (°)<input id="sun-phase" type="number" step="1" value="180"></label>
+          <label>Tolerance (%)<input id="tolerance" type="number" min="0.1" max="20" step="0.1" value="1"></label>
+        </div>
+        <div class="row-actions end">
+          <button class="btn secondary" id="demo-btn">Load demo</button>
+          <button class="btn primary" id="run-btn">Run mission</button>
+        </div>
+        <div class="progress" id="progress"><div class="bar" id="progress-bar"></div></div>
+        <div class="mono small" id="mission-status">ready</div>
+      </div>
+      <div class="card compact">
+        <div class="card-head"><h2>Vehicle in use</h2><span class="pill" id="mission-rocket-name">—</span></div>
+        <div class="stat-grid tight">
+          <div class="stat"><span>Mass</span><strong id="mission-mass">—</strong></div>
+          <div class="stat"><span>Delta-v</span><strong id="mission-dv">—</strong></div>
+          <div class="stat"><span>TWR</span><strong id="mission-twr">—</strong></div>
+          <div class="stat"><span>Stages</span><strong id="mission-stages">—</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column">
+      <div class="card">
+        <div class="card-head"><h2>Result</h2><span class="pill" id="result-pill">no run</span></div>
+        <div class="result-grid" id="mission-cards">
+          <div class="stat"><span>Status</span><strong id="result-status">—</strong></div>
+          <div class="stat"><span>Lunar periapsis</span><strong id="result-peri">—</strong></div>
+          <div class="stat"><span>Lunar apoapsis</span><strong id="result-apo">—</strong></div>
+          <div class="stat"><span>Eccentricity</span><strong id="result-ecc">—</strong></div>
+          <div class="stat"><span>Total delta-v</span><strong id="result-dv">—</strong></div>
+          <div class="stat"><span>Mission time</span><strong id="result-time">—</strong></div>
+          <div class="stat"><span>Perilune residual</span><strong id="result-residual">—</strong></div>
+          <div class="stat"><span>Final mass</span><strong id="result-mass">—</strong></div>
+        </div>
+        <p class="muted small" id="result-message">Run a mission to populate the plots and event log.</p>
+        <div class="row-actions end">
+          <button class="btn ghost" id="export-csv" disabled>Export CSV</button>
+          <button class="btn ghost" id="export-report" disabled>Export report</button>
+        </div>
+      </div>
+      <div class="card compact">
+        <div class="card-head"><h2>Live event stream</h2><span class="hint">SSE</span></div>
+        <div class="event-mini" id="mission-events">waiting for a run</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-plots" role="tabpanel">
+  <div class="plots-head">
+    <div><h2>Flight plots</h2><p class="muted small">Rendered from the real propagated trajectory samples.</p></div>
+    <div class="legend" id="plot-legend">
+      <span><i class="swatch ascent"></i>ascent</span>
+      <span><i class="swatch parking"></i>parking</span>
+      <span><i class="swatch transfer"></i>transfer</span>
+      <span><i class="swatch lunar"></i>lunar</span>
+    </div>
+  </div>
+  <div class="plot-grid">
+    <div class="card plot-card wide">
+      <div class="card-head"><h2>Ground track (Earth-centred, km)</h2><span class="hint">x / y inertial</span></div>
+      <canvas id="plot-trajectory" width="1200" height="620"></canvas>
+    </div>
+    <div class="card plot-card">
+      <div class="card-head"><h2>Altitude</h2><span class="hint">km vs hours</span></div>
+      <canvas id="plot-altitude" width="720" height="360"></canvas>
+    </div>
+    <div class="card plot-card">
+      <div class="card-head"><h2>Speed</h2><span class="hint">km/s vs hours</span></div>
+      <canvas id="plot-speed" width="720" height="360"></canvas>
+    </div>
+    <div class="card plot-card wide">
+      <div class="card-head"><h2>Distance to Moon</h2><span class="hint">km vs hours</span></div>
+      <canvas id="plot-moon" width="1200" height="320"></canvas>
+    </div>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-events" role="tabpanel">
+  <div class="card">
+    <div class="card-head"><h2>Mission event log</h2><span class="hint" id="event-count">0 events</span></div>
+    <div class="table-wrap">
+      <table class="event-table">
+        <thead><tr><th>Time (s)</th><th>Phase</th><th>Event</th><th>Detail</th></tr></thead>
+        <tbody id="event-table"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card compact">
+    <div class="card-head"><h2>Model notes</h2></div>
+    <p class="muted small">Two-dimensional coplanar model. Earth–Moon–Sun positions come from the documented circular ephemeris; the Moon capture uses full n-body coasting and finite burns. Ascent includes drag, Earth rotation, staging and a gravity-turn autopilot. See <code>docs/physics.md</code>.</p>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <span>Orbit v0.1 · local loopback Studio · no telemetry, no external requests</span>
+  <span class="mono" id="footer-token">token protected</span>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

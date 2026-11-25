@@ -102,6 +102,8 @@ pub struct MissionSample {
     pub moon_distance: f64,
     pub phase: Phase,
     pub mass: f64,
+    pub x: f64,
+    pub y: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -238,6 +240,8 @@ fn ascent_samples_into(
             moon_distance: (s.position - moon).norm(),
             phase: Phase::Ascent,
             mass: s.mass,
+            x: s.position.x,
+            y: s.position.y,
         });
     }
 }
@@ -256,6 +260,8 @@ fn push_coast_samples(
             moon_distance: s.moon_distance,
             phase,
             mass,
+            x: s.position.x,
+            y: s.position.y,
         });
     }
 }
@@ -606,6 +612,8 @@ pub fn run_mission(rocket: &Rocket, config: &MissionConfig) -> Result<MissionRes
         moon_distance: (lunar.state.position - eph.position(Body::Moon, lunar.t)).norm(),
         phase: Phase::Lunar,
         mass: vehicle.mass,
+        x: lunar.state.position.x,
+        y: lunar.state.position.y,
     });
 
     let target = config.lunar_altitude;

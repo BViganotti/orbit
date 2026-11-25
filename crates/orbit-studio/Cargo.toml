@@ -6,6 +6,10 @@ rust-version.workspace = true
 license.workspace = true
 description = "Local browser Studio for Orbit"
 
+[lib]
+name = "orbit_studio"
+path = "src/lib.rs"
+
 [dependencies]
 orbit-core = { path = "../orbit-core" }
 orbit-flight = { path = "../orbit-flight" }
