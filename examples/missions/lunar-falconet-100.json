@@ -1,0 +1,11 @@
+{
+  "mission": "lunar-falconet-100",
+  "description": "Hypergolic transfer stage mission.",
+  "rocket_id": "falconet",
+  "lunar_altitude_km": 100,
+  "epoch_days": 2,
+  "moon_phase_deg": 80,
+  "sun_phase_deg": 260,
+  "parking_altitude_km": 400,
+  "tolerance": 0.01
+}
