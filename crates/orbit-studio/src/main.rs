@@ -34,8 +34,13 @@ fn main() {
                 }
                 config.token = Some(value);
             }
+            "--version" | "-V" => {
+                println!("orbit {}", env!("CARGO_PKG_VERSION"));
+                return;
+            }
             "--help" | "-h" => {
                 println!("Usage: orbit [--port N] [--no-open] [--token TOKEN]");
+                println!("       orbit --version");
                 return;
             }
             other => {
