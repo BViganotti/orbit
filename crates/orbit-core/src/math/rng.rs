@@ -98,7 +98,7 @@ mod tests {
     fn bad_ranges_are_safe() {
         let mut rng = Rng::new(9);
         assert_eq!(rng.range(2.0, 1.0), 2.0);
-        assert_eq!(rng.range(f64::NAN, 1.0), f64::NAN);
+        assert!(rng.range(f64::NAN, 1.0).is_nan());
         assert_eq!(rng.integer(5, 5), 5);
     }
 }
