@@ -617,7 +617,8 @@ function plotTimeSeries(canvas, result, index, scale, label, logy = false) {
     frame.ctx.fillText("no trajectory samples", frame.left, frame.top + 30);
     return;
   }
-  const points = samples.map((s) => [s[0] / 3600, s[index] * scale, 0, 0, s[4]]);
+  const t0 = samples[0][0];
+  const points = samples.map((s) => [(s[0] - t0) / 3600, s[index] * scale, 0, 0, s[4]]);
   const xmax = Math.max(0.1, ...points.map((p) => p[0]));
   let ymax = Math.max(1, ...points.map((p) => p[1]));
   if (logy) ymax = Math.max(10, ymax);
