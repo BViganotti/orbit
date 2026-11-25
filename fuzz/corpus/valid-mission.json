@@ -1,0 +1,11 @@
+{
+  "mission": "lunar-atlas-100",
+  "description": "Heavy three-stage mission with margin.",
+  "rocket_id": "atlas",
+  "lunar_altitude_km": 100,
+  "epoch_days": 1,
+  "moon_phase_deg": 40,
+  "sun_phase_deg": 220,
+  "parking_altitude_km": 400,
+  "tolerance": 0.01
+}
