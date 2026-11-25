@@ -132,8 +132,20 @@ pub fn read_request(stream: &mut TcpStream) -> Result<Request, String> {
     }
     let head = &buffer[..head_end];
     let request = parse_head(head)?;
-    let content_length = request
-        .header("content-length")
+    if request.header("transfer-encoding").is_some() {
+        return Err("transfer-encoding is not supported".into());
+    }
+    let lengths: Vec<&str> = request
+        .headers
+        .iter()
+        .filter(|(k, _)| k.eq_ignore_ascii_case("content-length"))
+        .map(|(_, v)| v.as_str())
+        .collect();
+    if lengths.len() > 1 {
+        return Err("duplicate content-length".into());
+    }
+    let content_length = lengths
+        .first()
         .map(|v| v.parse::<usize>().map_err(|_| "bad content-length".to_string()))
         .transpose()?
         .unwrap_or(0);
@@ -208,6 +220,9 @@ pub fn parse_head(head: &[u8]) -> Result<Request, String> {
             if pair.is_empty() {
                 continue;
             }
+            if query_pairs.len() >= 64 {
+                return Err("too many query parameters".into());
+            }
             let (k, v) = pair.split_once('=').unwrap_or((pair, ""));
             let k = percent_decode(k)?;
             let v = percent_decode(v)?;
@@ -276,9 +291,11 @@ pub fn write_response(stream: &mut TcpStream, response: &Response, head_only: bo
     head.push_str(&format!("Content-Length: {}\r\n", response.body.len()));
     head.push_str("Connection: close\r\n");
     head.push_str("X-Content-Type-Options: nosniff\r\n");
+    head.push_str("X-Frame-Options: DENY\r\n");
     head.push_str("Referrer-Policy: no-referrer\r\n");
+    head.push_str("Permissions-Policy: camera=(), microphone=(), geolocation=()\r\n");
     if response.content_type.starts_with("text/html") {
-        head.push_str("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'\r\n");
+        head.push_str("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'\r\n");
     }
     for (name, value) in &response.headers {
         head.push_str(&format!("{name}: {value}\r\n"));
