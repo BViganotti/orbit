@@ -115,6 +115,7 @@ fn one_hundred_randomized_missions_never_produce_nan_or_unbounded_state() {
         }
     }
     assert_eq!(successes + failures, 100);
+    eprintln!("randomized missions: {successes} successes, {failures} honest failures");
     // Randomised perturbations are allowed to fail honestly, but the pipeline
     // must remain finite. Report the observed split in the failure message.
     assert!(
