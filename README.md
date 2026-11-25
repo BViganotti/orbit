@@ -123,6 +123,7 @@ fuzz/ bench/           harness docs, corpus and measured results
 - [HTTP API](docs/api.md)
 - [Testing and benchmarks](docs/testing.md)
 - [Limitations](LIMITATIONS.md)
+- [Final report](FINAL_REPORT.md)
 - [Changelog](CHANGELOG.md)
 
 ## License
