@@ -375,6 +375,27 @@ mod tests {
     }
 
     #[test]
+    fn insertion_trims_to_a_higher_target_altitude() {
+        let eph = Ephemeris::default();
+        let rocket = presets::atlas();
+        let (state, t) = near_moon_state(150_000.0, 0.92);
+        let mut v = Vehicle::new(2, rocket.stages[2].propellant_mass(), 20_000.0);
+        let out = insert_lunar_orbit(
+            &eph,
+            &rocket,
+            &mut v,
+            t,
+            state,
+            150_000.0,
+            &BurnConfig::default(),
+        )
+        .unwrap();
+        assert!((out.periapsis_altitude - 150_000.0).abs() < 1_500.0);
+        assert!((out.apoapsis_altitude - 150_000.0).abs() < 1_500.0);
+        assert!(out.elements.eccentricity < 0.002);
+    }
+
+    #[test]
     fn circular_velocity_is_tangential() {
         let eph = Ephemeris::default();
         let moon = eph.state(Body::Moon, 0.0);
