@@ -454,8 +454,14 @@ mod tests {
     fn rk4_decay_is_accurate() {
         let mut y = [1.0];
         let mut scratch = [0.0];
-        rk4_step(&decay as &dyn Fn(f64, &[f64], &mut [f64]), 0.0, &mut y, 0.01, &mut scratch)
-            .unwrap();
+        rk4_step(
+            &decay as &dyn Fn(f64, &[f64], &mut [f64]),
+            0.0,
+            &mut y,
+            0.01,
+            &mut scratch,
+        )
+        .unwrap();
         assert!((y[0] - (-0.01f64).exp()).abs() < 1e-10);
     }
 
@@ -579,7 +585,12 @@ mod tests {
         let mut t = 0.0;
         let mut h = 0.1;
         assert_eq!(
-            dp.step(&(decay as fn(f64, &[f64], &mut [f64])), &mut t, &mut y, &mut h),
+            dp.step(
+                &(decay as fn(f64, &[f64], &mut [f64])),
+                &mut t,
+                &mut y,
+                &mut h
+            ),
             Err(IntegratorError::NonFinite)
         );
     }

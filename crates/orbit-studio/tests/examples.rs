@@ -52,6 +52,8 @@ fn all_twenty_mission_examples_are_valid() {
         config.sun_phase = value.number("sun_phase_deg").unwrap().to_radians();
         config.ascent.target_altitude = value.number("parking_altitude_km").unwrap() * 1000.0;
         config.tolerance = value.number("tolerance").unwrap();
-        config.validate().unwrap_or_else(|e| panic!("{:?}: {e}", file));
+        config
+            .validate()
+            .unwrap_or_else(|e| panic!("{:?}: {e}", file));
     }
 }

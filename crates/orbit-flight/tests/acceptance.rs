@@ -20,7 +20,13 @@ fn tsiolkovsky_matches_independent_computation_within_0_1_percent() {
             let expected = stage.engine.isp_vacuum * G0 * (wet / dry).ln();
             let actual = rocket.stage_delta_v(i);
             let error = (actual - expected).abs() / expected.max(1.0);
-            assert!(error <= 0.001, "{} stage {} error {}", rocket.name, i + 1, error);
+            assert!(
+                error <= 0.001,
+                "{} stage {} error {}",
+                rocket.name,
+                i + 1,
+                error
+            );
             total += actual;
         }
         assert!((total - rocket.total_delta_v()).abs() <= 0.001 * total.max(1.0));
@@ -111,7 +117,10 @@ fn one_hundred_randomized_missions_never_produce_nan_or_unbounded_state() {
     assert_eq!(successes + failures, 100);
     // Randomised perturbations are allowed to fail honestly, but the pipeline
     // must remain finite. Report the observed split in the failure message.
-    assert!(successes >= 80, "only {successes}/100 randomised missions succeeded");
+    assert!(
+        successes >= 80,
+        "only {successes}/100 randomised missions succeeded"
+    );
 }
 
 fn perturb(rng: &mut Rng, mut rocket: Rocket) -> Rocket {

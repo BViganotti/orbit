@@ -63,10 +63,7 @@ pub struct CheckReport {
 
 impl CheckReport {
     pub fn ok(&self) -> bool {
-        !self
-            .issues
-            .iter()
-            .any(|i| i.severity == Severity::Error)
+        !self.issues.iter().any(|i| i.severity == Severity::Error)
     }
 
     pub fn errors(&self) -> usize {

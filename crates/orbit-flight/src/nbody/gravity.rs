@@ -104,9 +104,7 @@ pub struct Elements {
 
 impl Elements {
     pub fn is_bound(&self) -> bool {
-        self.semi_major_axis.is_finite()
-            && self.semi_major_axis > 0.0
-            && self.eccentricity < 1.0
+        self.semi_major_axis.is_finite() && self.semi_major_axis > 0.0 && self.eccentricity < 1.0
     }
 
     pub fn periapsis_altitude(&self, body_radius: f64) -> f64 {

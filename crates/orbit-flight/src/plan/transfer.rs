@@ -12,7 +12,7 @@ use orbit_core::math::Vec2;
 use orbit_core::rocket::Rocket;
 
 use crate::nbody::gravity::elements;
-use crate::nbody::propagator::{coast, CoastConfig, Coast, State};
+use crate::nbody::propagator::{coast, Coast, CoastConfig, State};
 use crate::nbody::Ephemeris;
 
 use super::burn::{finite_burn, prograde, BurnConfig, BurnStatus};
@@ -158,9 +158,7 @@ pub fn evaluate(
     let end_time = end + tof_nominal + 4.0 * 86_400.0;
     let result = coast(eph, burn.state, end, end_time, &coast_config())
         .map_err(|e| PlanError::Propagation(e.to_string()))?;
-    let closest = result
-        .closest_moon
-        .ok_or(PlanError::NoEncounter)?;
+    let closest = result.closest_moon.ok_or(PlanError::NoEncounter)?;
     if !closest.distance.is_finite() || closest.distance > 1.0e10 {
         return Err(PlanError::NoEncounter);
     }
@@ -198,8 +196,8 @@ pub fn phase_wait(eph: &Ephemeris, state: State, t0: f64) -> Option<(f64, f64)> 
     let tof = std::f64::consts::PI * ((0.5 * (r0 + MOON_ORBIT_RADIUS)).powi(3) / MU_EARTH).sqrt();
     let moon0 = eph.moon_angle(t0);
     let theta0 = state.position.angle();
-    let delta = (moon0 + n_moon * tof - std::f64::consts::PI - theta0)
-        .rem_euclid(std::f64::consts::TAU);
+    let delta =
+        (moon0 + n_moon * tof - std::f64::consts::PI - theta0).rem_euclid(std::f64::consts::TAU);
     let rate = n0 - n_moon;
     if rate.abs() < 1.0e-12 {
         return None;
@@ -235,14 +233,12 @@ pub fn plan_tli(
     state: State,
     target_perilune_altitude: f64,
 ) -> Result<TliPlan, PlanError> {
-    rocket
-        .validate()
-        .map_err(|e| PlanError::InvalidInput(e))?;
-    vehicle
-        .validate(rocket)
-        .map_err(PlanError::InvalidInput)?;
+    rocket.validate().map_err(|e| PlanError::InvalidInput(e))?;
+    vehicle.validate(rocket).map_err(PlanError::InvalidInput)?;
     if !state.is_finite() || !t0.is_finite() {
-        return Err(PlanError::InvalidInput("state or time is not finite".into()));
+        return Err(PlanError::InvalidInput(
+            "state or time is not finite".into(),
+        ));
     }
     if !(0.0..=1_000_000.0).contains(&target_perilune_altitude) {
         return Err(PlanError::InvalidInput("perilune altitude".into()));
@@ -311,8 +307,12 @@ pub fn plan_tli(
     let inv_phi = (5.0f64.sqrt() - 1.0) * 0.5;
     let mut c = hi - inv_phi * (hi - lo);
     let mut d = lo + inv_phi * (hi - lo);
-    let mut fc = evaluate_dv(c).map(|(_, r)| r + target_radius).unwrap_or(f64::INFINITY);
-    let mut fd = evaluate_dv(d).map(|(_, r)| r + target_radius).unwrap_or(f64::INFINITY);
+    let mut fc = evaluate_dv(c)
+        .map(|(_, r)| r + target_radius)
+        .unwrap_or(f64::INFINITY);
+    let mut fd = evaluate_dv(d)
+        .map(|(_, r)| r + target_radius)
+        .unwrap_or(f64::INFINITY);
     for _ in 0..40 {
         if fc < fd {
             hi = d;
@@ -356,7 +356,9 @@ pub fn plan_tli(
     // solution to report.
     if min_distance > target_radius + 10_000.0 {
         let residual = min_distance - target_radius;
-        return Err(PlanError::ResidualTooLarge((residual / 100.0).round() as i64));
+        return Err(PlanError::ResidualTooLarge(
+            (residual / 100.0).round() as i64
+        ));
     }
 
     // Bracket the target altitude on the inbound side of the minimum.
@@ -385,7 +387,12 @@ pub fn plan_tli(
     let mut upper = dv_min;
     let mut f_upper = evaluate_dv(upper)
         .map(|(ev, r)| {
-            if r.abs() < best.as_ref().map(|(_, _, br)| br.abs()).unwrap_or(f64::INFINITY) {
+            if r.abs()
+                < best
+                    .as_ref()
+                    .map(|(_, _, br)| br.abs())
+                    .unwrap_or(f64::INFINITY)
+            {
                 best = Some((ev, upper, r));
             }
             r
@@ -442,7 +449,7 @@ pub fn plan_tli(
             });
         }
         return Err(PlanError::ResidualTooLarge(
-            (residual / 100.0).round() as i64,
+            (residual / 100.0).round() as i64
         ));
     }
     Err(PlanError::NoBracket)
@@ -450,8 +457,7 @@ pub fn plan_tli(
 
 /// Total transfer time used by the phase model.
 pub fn nominal_tof(parking_radius: f64) -> f64 {
-    std::f64::consts::PI
-        * ((0.5 * (parking_radius + MOON_ORBIT_RADIUS)).powi(3) / MU_EARTH).sqrt()
+    std::f64::consts::PI * ((0.5 * (parking_radius + MOON_ORBIT_RADIUS)).powi(3) / MU_EARTH).sqrt()
 }
 
 #[cfg(test)]
@@ -488,7 +494,10 @@ mod tests {
         let rocket = presets::atlas();
         let v = Vehicle::new(0, rocket.stages[0].propellant_mass(), rocket.liftoff_mass());
         let r = R_EARTH + 500_000.0;
-        let s = State::new(Vec2::new(r, 0.0), Vec2::new(0.0, (MU_EARTH / r).sqrt() * 1.5));
+        let s = State::new(
+            Vec2::new(r, 0.0),
+            Vec2::new(0.0, (MU_EARTH / r).sqrt() * 1.5),
+        );
         assert!(plan_tli(&eph, &rocket, &v, 0.0, s, 100_000.0).is_err());
     }
 }

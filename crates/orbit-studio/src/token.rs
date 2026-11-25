@@ -60,7 +60,9 @@ mod tests {
     fn token_has_expected_shape() {
         let t = random_token();
         assert_eq!(t.len(), 32);
-        assert!(t.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
+        assert!(t
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
     }
 
     #[test]

@@ -289,7 +289,13 @@ pub fn run_ascent(
     let stage = &rocket.stages[0];
     let mut base_mass = rocket.mass_above(0) + stage.dry_mass();
     let mut prop = stage.propellant_mass();
-    let mut y = [state.position.x, state.position.y, state.velocity.x, state.velocity.y, prop];
+    let mut y = [
+        state.position.x,
+        state.position.y,
+        state.velocity.x,
+        state.velocity.y,
+        prop,
+    ];
     let mut t = t0;
     let mut events = vec![make_event(t0, state, AscentEventKind::Liftoff)];
     let mut samples = vec![AscentSample {
@@ -406,22 +412,14 @@ pub fn run_ascent(
             // configured corridor.
             if q > config.max_q {
                 max_q_event_recorded = true;
-                events.push(make_event(
-                    elapsed,
-                    current,
-                    AscentEventKind::MaxQ { q },
-                ));
+                events.push(make_event(elapsed, current, AscentEventKind::MaxQ { q }));
             }
         }
         let throttle = throttle_for_q(q, config.max_q);
         let thrust = stage.engine.thrust_at(pr) * f64::from(stage.engine_count) * throttle;
         let mass = base_mass + y[4];
-        let pitch = pitch_program(
-            altitude,
-            config.target_altitude,
-            config.pitch_exponent,
-        )
-        .clamp(0.0, std::f64::consts::FRAC_PI_2);
+        let pitch = pitch_program(altitude, config.target_altitude, config.pitch_exponent)
+            .clamp(0.0, std::f64::consts::FRAC_PI_2);
         max_g = max_g.max(thrust / (mass * G0));
         delta_v += (thrust / mass) * config.dt;
 
@@ -498,8 +496,9 @@ pub fn run_ascent(
         Some(el) => {
             el.apoapsis > R_EARTH + config.target_altitude - 5_000.0
                 && final_state.altitude() > 30_000.0
-                && y[4] > rocket.stages[stage_index].propellant_mass()
-                    * rocket.stages[stage_index].reserve_fraction
+                && y[4]
+                    > rocket.stages[stage_index].propellant_mass()
+                        * rocket.stages[stage_index].reserve_fraction
         }
         None => false,
     };

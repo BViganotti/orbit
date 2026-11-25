@@ -9,7 +9,9 @@ use orbit_studio::{Server, ServerConfig};
 
 fn request(port: u16, raw: &str) -> (u16, String, String) {
     let mut stream = TcpStream::connect(("127.0.0.1", port)).expect("connect");
-    stream.set_read_timeout(Some(Duration::from_secs(30))).unwrap();
+    stream
+        .set_read_timeout(Some(Duration::from_secs(30)))
+        .unwrap();
     stream.write_all(raw.as_bytes()).unwrap();
     let mut bytes = Vec::new();
     stream.read_to_end(&mut bytes).unwrap();

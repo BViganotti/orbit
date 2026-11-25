@@ -25,8 +25,17 @@ fn prograde_burn_adds_energy_and_retrograde_removes_it() {
     let cfg = BurnConfig::default();
 
     let mut up = Vehicle::new(0, rocket.stages[0].propellant_mass(), rocket.liftoff_mass());
-    let boosted = finite_burn(&eph, &rocket, &mut up, 0.0, state, prograde(state), 20.0, &cfg)
-        .unwrap();
+    let boosted = finite_burn(
+        &eph,
+        &rocket,
+        &mut up,
+        0.0,
+        state,
+        prograde(state),
+        20.0,
+        &cfg,
+    )
+    .unwrap();
     assert!(specific_energy(boosted.state) > e0);
     assert!(up.mass < rocket.liftoff_mass());
     assert!(boosted.delta_v > 19.0);

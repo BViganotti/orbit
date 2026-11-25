@@ -89,7 +89,11 @@ fn main() {
                 row.0, row.1, row.2, row.3, row.4, row.5, row.6
             );
         }
-        println!("\n{}/{} missions succeeded", rows.len() - failures, rows.len());
+        println!(
+            "\n{}/{} missions succeeded",
+            rows.len() - failures,
+            rows.len()
+        );
     }
     if failures > 0 {
         std::process::exit(1);

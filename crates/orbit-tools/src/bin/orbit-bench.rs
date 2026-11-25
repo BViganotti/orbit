@@ -36,7 +36,11 @@ fn main() {
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         if arg == "--scale" {
-            scale = args.next().and_then(|v| v.parse().ok()).unwrap_or(1).clamp(1, 20);
+            scale = args
+                .next()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(1)
+                .clamp(1, 20);
         }
     }
     let eph = Ephemeris::default();
@@ -47,7 +51,10 @@ fn main() {
         values.push(json::object(vec![
             ("id", json::number(i as f64)),
             ("name", json::string(format!("sample-{i}"))),
-            ("values", json::array((0..20).map(|j| json::number(j as f64 * 1.5)).collect())),
+            (
+                "values",
+                json::array((0..20).map(|j| json::number(j as f64 * 1.5)).collect()),
+            ),
         ]));
     }
     let document = json::stringify(&json::array(values));
@@ -56,7 +63,9 @@ fn main() {
         black_box(json::parse(black_box(&document)).unwrap());
     });
     time("json stringify", 500 * scale, || {
-        black_box(json::stringify(black_box(&json::array(vec![json::number(1.0)]))));
+        black_box(json::stringify(black_box(&json::array(vec![
+            json::number(1.0),
+        ]))));
     });
 
     // Ascent.
@@ -88,9 +97,15 @@ fn main() {
         ascent.mass,
     )
     .unwrap();
-    let (state, t, _, _) =
-        circularize(&eph, &rocket, &mut vehicle, ascent.t, ascent.state, &BurnConfig::default())
-            .unwrap();
+    let (state, t, _, _) = circularize(
+        &eph,
+        &rocket,
+        &mut vehicle,
+        ascent.t,
+        ascent.state,
+        &BurnConfig::default(),
+    )
+    .unwrap();
     time("tli plan (98 evals)", 5 * scale, || {
         let plan = plan_tli(&eph, &rocket, &vehicle, t, state, 100_000.0).unwrap();
         black_box(plan.burn_delta_v);

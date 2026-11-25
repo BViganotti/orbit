@@ -55,10 +55,7 @@ fn parse_tank(value: &Value) -> Result<Tank, String> {
     let prop = value
         .get("propellant")
         .ok_or_else(|| "tank is missing 'propellant'".to_string())?;
-    let propellant = Propellant::new(
-        text(prop, "name", 64)?,
-        num(prop, "density", 1.0, 3000.0)?,
-    );
+    let propellant = Propellant::new(text(prop, "name", 64)?, num(prop, "density", 1.0, 3000.0)?);
     let tank = Tank::new(
         text(value, "name", 64)?,
         num(value, "propellant_mass", 1.0, 2.0e6)?,
@@ -100,7 +97,10 @@ pub fn parse_rocket(value: &Value) -> Result<Rocket, String> {
     if value.as_object().is_none() {
         return Err("rocket must be a JSON object".into());
     }
-    let mut rocket = Rocket::new(text(value, "name", 80)?, num(value, "payload_mass", 0.0, 1.0e6)?);
+    let mut rocket = Rocket::new(
+        text(value, "name", 80)?,
+        num(value, "payload_mass", 0.0, 1.0e6)?,
+    );
     rocket.drag_area = opt_num(value, "drag_area", 12.0, 0.1, 1000.0)?;
     rocket.drag_coefficient = opt_num(value, "drag_coefficient", 0.32, 0.02, 5.0)?;
     let stages = value
@@ -181,7 +181,10 @@ fn summary_json(rocket: &Rocket) -> Value {
         ("payload_fraction", number(round(s.payload_fraction, 6))),
         ("total_delta_v", number(round(s.total_delta_v, 1))),
         ("liftoff_twr", number(round(s.liftoff_twr, 3))),
-        ("vacuum_twr_first_stage", number(round(s.vacuum_twr_first_stage, 3))),
+        (
+            "vacuum_twr_first_stage",
+            number(round(s.vacuum_twr_first_stage, 3)),
+        ),
         ("total_burn_time", number(round(s.total_burn_time, 1))),
         ("stage_count", number(s.stage_count as f64)),
     ])
@@ -209,11 +212,13 @@ fn check_report_json(report: &CheckReport) -> Value {
             report
                 .summary
                 .as_ref()
-                .map(|s| object(vec![
-                    ("liftoff_mass", number(round(s.liftoff_mass, 1))),
-                    ("total_delta_v", number(round(s.total_delta_v, 1))),
-                    ("liftoff_twr", number(round(s.liftoff_twr, 3))),
-                ]))
+                .map(|s| {
+                    object(vec![
+                        ("liftoff_mass", number(round(s.liftoff_mass, 1))),
+                        ("total_delta_v", number(round(s.total_delta_v, 1))),
+                        ("liftoff_twr", number(round(s.liftoff_twr, 3))),
+                    ])
+                })
                 .unwrap_or(Value::Null),
         ),
     ])
@@ -225,10 +230,7 @@ pub fn validate_rocket(value: &Value) -> Result<Value, String> {
     let report = inspect(&rocket);
     Ok(object(vec![
         ("ok", json::Value::Bool(report.ok())),
-        (
-            "report",
-            check_report_json(&report),
-        ),
+        ("report", check_report_json(&report)),
         ("rocket", rocket_to_json(&rocket)),
     ]))
 }
@@ -347,9 +349,15 @@ pub fn mission_to_json(result: &MissionResult) -> Value {
                 ("total_time", number(round(result.total_time, 1))),
                 ("delta_v_ascent", number(round(result.delta_v_ascent, 1))),
                 ("delta_v_parking", number(round(result.delta_v_parking, 1))),
-                ("delta_v_transfer", number(round(result.delta_v_transfer, 1))),
+                (
+                    "delta_v_transfer",
+                    number(round(result.delta_v_transfer, 1)),
+                ),
                 ("delta_v_capture", number(round(result.delta_v_capture, 1))),
-                ("propellant_remaining", number(round(result.propellant_remaining, 1))),
+                (
+                    "propellant_remaining",
+                    number(round(result.propellant_remaining, 1)),
+                ),
                 ("final_mass", number(round(result.final_mass, 1))),
                 ("target_altitude", number(round(result.target_altitude, 1))),
                 (
@@ -386,11 +394,15 @@ pub fn mission_to_json(result: &MissionResult) -> Value {
                         ("stage_index", number(a.stage_index as f64)),
                         (
                             "periapsis_altitude",
-                            a.periapsis_altitude().map(|v| number(round(v, 1))).unwrap_or(Value::Null),
+                            a.periapsis_altitude()
+                                .map(|v| number(round(v, 1)))
+                                .unwrap_or(Value::Null),
                         ),
                         (
                             "apoapsis_altitude",
-                            a.apoapsis_altitude().map(|v| number(round(v, 1))).unwrap_or(Value::Null),
+                            a.apoapsis_altitude()
+                                .map(|v| number(round(v, 1)))
+                                .unwrap_or(Value::Null),
                         ),
                     ])
                 })
@@ -427,7 +439,10 @@ pub fn mission_to_json(result: &MissionResult) -> Value {
                         ("period", number(round(l.elements.period, 1))),
                         ("spent_delta_v", number(round(l.spent_delta_v, 1))),
                         ("iterations", number(f64::from(l.iterations))),
-                        ("entry_periapsis_altitude", number(round(l.entry_periapsis_altitude, 1))),
+                        (
+                            "entry_periapsis_altitude",
+                            number(round(l.entry_periapsis_altitude, 1)),
+                        ),
                     ])
                 })
                 .unwrap_or(Value::Null),
@@ -464,8 +479,14 @@ pub fn conservation_json() -> Result<Value, String> {
         ("steps", number(f64::from(report.steps))),
         ("energy_before", number(report.energy_before)),
         ("energy_after", number(report.energy_after)),
-        ("relative_energy_error", number(report.relative_energy_error)),
-        ("relative_momentum_error", number(report.relative_momentum_error)),
+        (
+            "relative_energy_error",
+            number(report.relative_energy_error),
+        ),
+        (
+            "relative_momentum_error",
+            number(report.relative_momentum_error),
+        ),
     ]))
 }
 
@@ -511,7 +532,8 @@ mod tests {
 
     #[test]
     fn mission_request_uses_script() {
-        let v = crate::json::parse(r#"{"script_id":"lunar-atlas-100","rocket_id":"kestrel"}"#).unwrap();
+        let v =
+            crate::json::parse(r#"{"script_id":"lunar-atlas-100","rocket_id":"kestrel"}"#).unwrap();
         let (rocket, config) = parse_mission(&v).unwrap();
         assert_eq!(rocket.name, "Kestrel");
         assert_eq!(config.lunar_altitude, 100_000.0);

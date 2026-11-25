@@ -15,20 +15,62 @@ struct Anchor {
 }
 
 const ANCHORS: [Anchor; 14] = [
-    Anchor { altitude: 0.0, density: 1.225 },
-    Anchor { altitude: 11_000.0, density: 0.363_9 },
-    Anchor { altitude: 20_000.0, density: 0.088_0 },
-    Anchor { altitude: 32_000.0, density: 0.013_2 },
-    Anchor { altitude: 47_000.0, density: 0.001_43 },
-    Anchor { altitude: 51_000.0, density: 0.000_861 },
-    Anchor { altitude: 71_000.0, density: 0.000_064 },
-    Anchor { altitude: 86_000.0, density: 0.000_006_9 },
-    Anchor { altitude: 100_000.0, density: 0.000_000_56 },
-    Anchor { altitude: 150_000.0, density: 0.000_000_002_1 },
-    Anchor { altitude: 200_000.0, density: 0.000_000_000_26 },
-    Anchor { altitude: 300_000.0, density: 0.000_000_000_019 },
-    Anchor { altitude: 500_000.0, density: 0.000_000_000_000_001_4 },
-    Anchor { altitude: 1_000_000.0, density: 1.0e-18 },
+    Anchor {
+        altitude: 0.0,
+        density: 1.225,
+    },
+    Anchor {
+        altitude: 11_000.0,
+        density: 0.363_9,
+    },
+    Anchor {
+        altitude: 20_000.0,
+        density: 0.088_0,
+    },
+    Anchor {
+        altitude: 32_000.0,
+        density: 0.013_2,
+    },
+    Anchor {
+        altitude: 47_000.0,
+        density: 0.001_43,
+    },
+    Anchor {
+        altitude: 51_000.0,
+        density: 0.000_861,
+    },
+    Anchor {
+        altitude: 71_000.0,
+        density: 0.000_064,
+    },
+    Anchor {
+        altitude: 86_000.0,
+        density: 0.000_006_9,
+    },
+    Anchor {
+        altitude: 100_000.0,
+        density: 0.000_000_56,
+    },
+    Anchor {
+        altitude: 150_000.0,
+        density: 0.000_000_002_1,
+    },
+    Anchor {
+        altitude: 200_000.0,
+        density: 0.000_000_000_26,
+    },
+    Anchor {
+        altitude: 300_000.0,
+        density: 0.000_000_000_019,
+    },
+    Anchor {
+        altitude: 500_000.0,
+        density: 0.000_000_000_000_001_4,
+    },
+    Anchor {
+        altitude: 1_000_000.0,
+        density: 1.0e-18,
+    },
 ];
 
 /// Atmospheric density in kg/m^3 at geometric altitude `h` metres.
@@ -140,7 +182,15 @@ mod tests {
 
     #[test]
     fn pressure_ratio_is_bounded() {
-        for h in [-1.0, 0.0, 5000.0, 50_000.0, 200_000.0, 2_000_000.0, f64::NAN] {
+        for h in [
+            -1.0,
+            0.0,
+            5000.0,
+            50_000.0,
+            200_000.0,
+            2_000_000.0,
+            f64::NAN,
+        ] {
             let p = pressure_ratio(h);
             assert!(p.is_finite() && (0.0..=1.0).contains(&p));
         }

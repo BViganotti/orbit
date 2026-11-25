@@ -57,12 +57,8 @@ pub fn diagnose(eph: &Ephemeris, t: f64, state: State) -> StateDiagnostics {
         earth_specific_energy: energy,
         earth_angular_momentum: h,
         earth_eccentricity: earth_el.map(|e| e.eccentricity).unwrap_or(f64::NAN),
-        earth_periapsis_altitude: earth_el
-            .map(|e| e.periapsis - R_EARTH)
-            .unwrap_or(f64::NAN),
-        earth_apoapsis_altitude: earth_el
-            .map(|e| e.apoapsis - R_EARTH)
-            .unwrap_or(f64::NAN),
+        earth_periapsis_altitude: earth_el.map(|e| e.periapsis - R_EARTH).unwrap_or(f64::NAN),
+        earth_apoapsis_altitude: earth_el.map(|e| e.apoapsis - R_EARTH).unwrap_or(f64::NAN),
         moon_distance: rel.norm(),
         moon_specific_energy: rel_el.map(|e| e.specific_energy),
         moon_periapsis_altitude: rel_el.map(|e| e.periapsis - R_MOON),
@@ -107,8 +103,18 @@ pub fn mission_report(result: &MissionResult) -> String {
     let _ = writeln!(out, "ORBIT MISSION REPORT");
     let _ = writeln!(out, "====================");
     let _ = writeln!(out, "mission:     {}", result.rocket_name);
-    let _ = writeln!(out, "status:      {} ({})", result.status.as_str(), result.message);
-    let _ = writeln!(out, "duration:    {:.1} s ({:.2} h)", result.total_time, result.total_time / 3600.0);
+    let _ = writeln!(
+        out,
+        "status:      {} ({})",
+        result.status.as_str(),
+        result.message
+    );
+    let _ = writeln!(
+        out,
+        "duration:    {:.1} s ({:.2} h)",
+        result.total_time,
+        result.total_time / 3600.0
+    );
     if let Some(s) = &result.summary {
         let _ = writeln!(out);
         let _ = writeln!(out, "VEHICLE");
@@ -121,17 +127,37 @@ pub fn mission_report(result: &MissionResult) -> String {
     }
     let _ = writeln!(out);
     let _ = writeln!(out, "DELTA-V BUDGET");
-    let _ = writeln!(out, "  ascent            {:>12.1} m/s", result.delta_v_ascent);
-    let _ = writeln!(out, "  parking           {:>12.1} m/s", result.delta_v_parking);
-    let _ = writeln!(out, "  trans-lunar       {:>12.1} m/s", result.delta_v_transfer);
-    let _ = writeln!(out, "  lunar capture     {:>12.1} m/s", result.delta_v_capture);
+    let _ = writeln!(
+        out,
+        "  ascent            {:>12.1} m/s",
+        result.delta_v_ascent
+    );
+    let _ = writeln!(
+        out,
+        "  parking           {:>12.1} m/s",
+        result.delta_v_parking
+    );
+    let _ = writeln!(
+        out,
+        "  trans-lunar       {:>12.1} m/s",
+        result.delta_v_transfer
+    );
+    let _ = writeln!(
+        out,
+        "  lunar capture     {:>12.1} m/s",
+        result.delta_v_capture
+    );
     let total = result.delta_v_ascent
         + result.delta_v_parking
         + result.delta_v_transfer
         + result.delta_v_capture;
     let _ = writeln!(out, "  total             {:>12.1} m/s", total);
     let _ = writeln!(out, "  final mass        {:>12.0} kg", result.final_mass);
-    let _ = writeln!(out, "  propellant left   {:>12.0} kg", result.propellant_remaining);
+    let _ = writeln!(
+        out,
+        "  propellant left   {:>12.0} kg",
+        result.propellant_remaining
+    );
     if let Some(ascent) = &result.ascent {
         let _ = writeln!(out);
         let _ = writeln!(out, "ASCENT");
@@ -139,7 +165,11 @@ pub fn mission_report(result: &MissionResult) -> String {
         let _ = writeln!(out, "  ascent delta-v    {:>12.1} m/s", ascent.delta_v);
         let _ = writeln!(out, "  max dynamic press {:>12.1} Pa", ascent.max_q);
         let _ = writeln!(out, "  max acceleration  {:>12.2} g", ascent.max_g);
-        let _ = writeln!(out, "  max altitude      {:>12.1} km", ascent.max_altitude / 1000.0);
+        let _ = writeln!(
+            out,
+            "  max altitude      {:>12.1} km",
+            ascent.max_altitude / 1000.0
+        );
         if let Some(peri) = ascent.periapsis_altitude() {
             let _ = writeln!(out, "  insertion periapsis {:>10.1} km", peri / 1000.0);
         }
@@ -150,19 +180,47 @@ pub fn mission_report(result: &MissionResult) -> String {
     if let Some(transfer) = &result.transfer {
         let _ = writeln!(out);
         let _ = writeln!(out, "TRANSFER");
-        let _ = writeln!(out, "  parking coast     {:>12.1} s", transfer.coast_seconds);
-        let _ = writeln!(out, "  TLI burn          {:>12.1} m/s over {:.1} s", transfer.burn_delta_v, transfer.burn_seconds);
-        let _ = writeln!(out, "  perilune          {:>12.1} km", transfer.perilune_altitude / 1000.0);
+        let _ = writeln!(
+            out,
+            "  parking coast     {:>12.1} s",
+            transfer.coast_seconds
+        );
+        let _ = writeln!(
+            out,
+            "  TLI burn          {:>12.1} m/s over {:.1} s",
+            transfer.burn_delta_v, transfer.burn_seconds
+        );
+        let _ = writeln!(
+            out,
+            "  perilune          {:>12.1} km",
+            transfer.perilune_altitude / 1000.0
+        );
         let _ = writeln!(out, "  target residual   {:>12.1} m", transfer.residual);
         let _ = writeln!(out, "  evaluations       {:>12}", transfer.evaluations);
     }
     if let Some(lunar) = &result.lunar {
         let _ = writeln!(out);
         let _ = writeln!(out, "LUNAR ORBIT");
-        let _ = writeln!(out, "  periapsis         {:>12.3} km", lunar.periapsis_altitude / 1000.0);
-        let _ = writeln!(out, "  apoapsis          {:>12.3} km", lunar.apoapsis_altitude / 1000.0);
-        let _ = writeln!(out, "  eccentricity      {:>12.6}", lunar.elements.eccentricity);
-        let _ = writeln!(out, "  target            {:>12.3} km", result.target_altitude / 1000.0);
+        let _ = writeln!(
+            out,
+            "  periapsis         {:>12.3} km",
+            lunar.periapsis_altitude / 1000.0
+        );
+        let _ = writeln!(
+            out,
+            "  apoapsis          {:>12.3} km",
+            lunar.apoapsis_altitude / 1000.0
+        );
+        let _ = writeln!(
+            out,
+            "  eccentricity      {:>12.6}",
+            lunar.elements.eccentricity
+        );
+        let _ = writeln!(
+            out,
+            "  target            {:>12.3} km",
+            result.target_altitude / 1000.0
+        );
         if let Some(e) = result.periapsis_error {
             let _ = writeln!(out, "  periapsis error   {:>12.3} km", e / 1000.0);
         }
@@ -187,7 +245,10 @@ pub fn mission_report(result: &MissionResult) -> String {
         let _ = writeln!(out, "RESULT: FAILED - {}", result.message);
     } else {
         let _ = writeln!(out);
-        let _ = writeln!(out, "RESULT: SUCCESS - lunar orbit achieved within tolerance");
+        let _ = writeln!(
+            out,
+            "RESULT: SUCCESS - lunar orbit achieved within tolerance"
+        );
     }
     out
 }

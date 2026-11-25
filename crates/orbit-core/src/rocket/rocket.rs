@@ -67,9 +67,7 @@ impl Rocket {
 
     pub fn post_stage_mass(&self, index: usize) -> f64 {
         let stage = &self.stages[index];
-        self.mass_above(index)
-            + stage.dry_mass()
-            + stage.propellant_mass() * stage.reserve_fraction
+        self.mass_above(index) + stage.dry_mass() + stage.propellant_mass() * stage.reserve_fraction
     }
 
     pub fn liftoff_mass(&self) -> f64 {
@@ -192,13 +190,19 @@ mod tests {
     fn two_stage() -> Rocket {
         let e1 = Engine::new("E1", 2_000_000.0, 1_800_000.0, 290.0, 270.0, 500.0);
         let e2 = Engine::new("E2", 300_000.0, 250_000.0, 350.0, 300.0, 200.0);
-        let s1 = Stage::new("S1", 6000.0, e1, 2)
-            .with_tank(Tank::new("T1", 200_000.0, 4000.0, Propellant::rp1_lox()));
-        let s2 = Stage::new("S2", 1500.0, e2, 1)
-            .with_tank(Tank::new("T2", 30_000.0, 800.0, Propellant::hydrogen_lox()));
-        Rocket::new("Test", 2000.0)
-            .with_stage(s1)
-            .with_stage(s2)
+        let s1 = Stage::new("S1", 6000.0, e1, 2).with_tank(Tank::new(
+            "T1",
+            200_000.0,
+            4000.0,
+            Propellant::rp1_lox(),
+        ));
+        let s2 = Stage::new("S2", 1500.0, e2, 1).with_tank(Tank::new(
+            "T2",
+            30_000.0,
+            800.0,
+            Propellant::hydrogen_lox(),
+        ));
+        Rocket::new("Test", 2000.0).with_stage(s1).with_stage(s2)
     }
 
     #[test]

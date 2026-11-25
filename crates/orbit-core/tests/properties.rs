@@ -120,7 +120,10 @@ fn atmosphere_and_drag_are_bounded_for_random_inputs() {
         assert!(q.is_finite() && q >= 0.0);
         let a = speed_of_sound(h);
         assert!(a.is_finite() && a >= 0.0 && a < 1000.0);
-        let v = Vec2::new(rng.range(-20_000.0, 20_000.0), rng.range(-20_000.0, 20_000.0));
+        let v = Vec2::new(
+            rng.range(-20_000.0, 20_000.0),
+            rng.range(-20_000.0, 20_000.0),
+        );
         let drag = model.acceleration(d, v, rng.range(1.0, 1_000_000.0));
         assert!(drag.is_finite());
         if v.norm() > 1e-6 && d > 0.0 {

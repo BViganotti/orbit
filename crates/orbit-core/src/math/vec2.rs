@@ -256,8 +256,12 @@ mod tests {
     #[test]
     fn clamping_rejects_bad_bounds() {
         let v = Vec2::new(5.0, -5.0);
-        let c = v.clamped(Vec2::new(0.0, -1.0), Vec2::new(1.0, 1.0)).unwrap();
+        let c = v
+            .clamped(Vec2::new(0.0, -1.0), Vec2::new(1.0, 1.0))
+            .unwrap();
         assert_eq!(c, Vec2::new(1.0, -1.0));
-        assert!(v.clamped(Vec2::new(1.0, 0.0), Vec2::new(0.0, 1.0)).is_none());
+        assert!(v
+            .clamped(Vec2::new(1.0, 0.0), Vec2::new(0.0, 1.0))
+            .is_none());
     }
 }

@@ -81,7 +81,10 @@ impl Response {
     }
 
     pub fn error(status: u16, message: impl Into<String>) -> Self {
-        Self::json(status, &json::object(vec![("error", json::string(message.into()))]))
+        Self::json(
+            status,
+            &json::object(vec![("error", json::string(message.into()))]),
+        )
     }
 
     pub fn with_header(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
@@ -146,7 +149,10 @@ pub fn read_request(stream: &mut TcpStream) -> Result<Request, String> {
     }
     let content_length = lengths
         .first()
-        .map(|v| v.parse::<usize>().map_err(|_| "bad content-length".to_string()))
+        .map(|v| {
+            v.parse::<usize>()
+                .map_err(|_| "bad content-length".to_string())
+        })
         .transpose()?
         .unwrap_or(0);
     if content_length > MAX_BODY {
@@ -176,7 +182,9 @@ fn find_double_crlf(bytes: &[u8]) -> Option<usize> {
 pub fn parse_head(head: &[u8]) -> Result<Request, String> {
     let text = std::str::from_utf8(head).map_err(|_| "headers are not UTF-8".to_string())?;
     let mut lines = text.split("\r\n");
-    let request_line = lines.next().ok_or_else(|| "missing request line".to_string())?;
+    let request_line = lines
+        .next()
+        .ok_or_else(|| "missing request line".to_string())?;
     let mut parts = request_line.split(' ');
     let method = match parts.next() {
         Some("GET") => Method::Get,
@@ -185,8 +193,12 @@ pub fn parse_head(head: &[u8]) -> Result<Request, String> {
         Some(_) => return Err("unsupported method".into()),
         None => return Err("missing method".into()),
     };
-    let target = parts.next().ok_or_else(|| "missing request target".to_string())?;
-    let version = parts.next().ok_or_else(|| "missing HTTP version".to_string())?;
+    let target = parts
+        .next()
+        .ok_or_else(|| "missing request target".to_string())?;
+    let version = parts
+        .next()
+        .ok_or_else(|| "missing HTTP version".to_string())?;
     if parts.next().is_some() || !version.starts_with("HTTP/1.") {
         return Err("malformed request line".into());
     }
@@ -279,7 +291,11 @@ fn hex_value(b: u8) -> Option<u8> {
 }
 
 /// Write a complete response and close the connection.
-pub fn write_response(stream: &mut TcpStream, response: &Response, head_only: bool) -> std::io::Result<()> {
+pub fn write_response(
+    stream: &mut TcpStream,
+    response: &Response,
+    head_only: bool,
+) -> std::io::Result<()> {
     stream.set_write_timeout(Some(Duration::from_secs(15)))?;
     let mut head = String::with_capacity(256);
     head.push_str(&format!(
@@ -326,7 +342,8 @@ mod tests {
 
     #[test]
     fn parses_post_target() {
-        let req = parse_head(b"POST /api/run HTTP/1.0\r\nContent-Type: application/json\r\n\r\n").unwrap();
+        let req = parse_head(b"POST /api/run HTTP/1.0\r\nContent-Type: application/json\r\n\r\n")
+            .unwrap();
         assert_eq!(req.method, Method::Post);
         assert_eq!(req.path, "/api/run");
         assert!(req.body.is_empty());
@@ -376,7 +393,10 @@ mod hardening_tests {
 
     #[test]
     fn excessive_query_parameters_are_rejected() {
-        let query = (0..65).map(|i| format!("k{i}=v")).collect::<Vec<_>>().join("&");
+        let query = (0..65)
+            .map(|i| format!("k{i}=v"))
+            .collect::<Vec<_>>()
+            .join("&");
         let head = format!("GET /api/health?{query} HTTP/1.1\r\n\r\n");
         assert!(parse_head(head.as_bytes()).is_err());
     }

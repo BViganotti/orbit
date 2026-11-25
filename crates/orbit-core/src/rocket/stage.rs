@@ -245,8 +245,12 @@ mod tests {
 
     fn test_stage() -> Stage {
         let engine = Engine::new("T", 1_000_000.0, 900_000.0, 300.0, 280.0, 500.0);
-        Stage::new("S1", 5000.0, engine, 1)
-            .with_tank(Tank::new("Tank", 100_000.0, 2000.0, Propellant::rp1_lox()))
+        Stage::new("S1", 5000.0, engine, 1).with_tank(Tank::new(
+            "Tank",
+            100_000.0,
+            2000.0,
+            Propellant::rp1_lox(),
+        ))
     }
 
     #[test]

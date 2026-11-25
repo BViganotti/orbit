@@ -141,13 +141,7 @@ pub fn secant<F: FnMut(f64) -> f64>(
 }
 
 /// Newton iteration with a caller-supplied derivative.
-pub fn newton<F, D>(
-    mut f: F,
-    mut df: D,
-    mut x: f64,
-    xtol: f64,
-    max_iter: u32,
-) -> Option<Root>
+pub fn newton<F, D>(mut f: F, mut df: D, mut x: f64, xtol: f64, max_iter: u32) -> Option<Root>
 where
     F: FnMut(f64) -> f64,
     D: FnMut(f64) -> f64,
@@ -273,8 +267,8 @@ mod tests {
 
     #[test]
     fn golden_minimum_of_parabola() {
-        let (x, y) = golden_minimize(|x| (x - 2.5) * (x - 2.5) + 1.0, -10.0, 10.0, 1e-10, 200)
-            .unwrap();
+        let (x, y) =
+            golden_minimize(|x| (x - 2.5) * (x - 2.5) + 1.0, -10.0, 10.0, 1e-10, 200).unwrap();
         assert!((x - 2.5).abs() < 1e-7);
         assert!((y - 1.0).abs() < 1e-10);
     }

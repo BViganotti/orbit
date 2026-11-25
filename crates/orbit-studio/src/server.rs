@@ -142,7 +142,11 @@ fn authorized(request: &Request, token: &str) -> bool {
     false
 }
 
-fn handle_connection(mut stream: TcpStream, token: &str, store: &Arc<Store>) -> std::io::Result<()> {
+fn handle_connection(
+    mut stream: TcpStream,
+    token: &str,
+    store: &Arc<Store>,
+) -> std::io::Result<()> {
     let request = match read_request(&mut stream) {
         Ok(r) => r,
         Err(error) => {
@@ -190,10 +194,7 @@ fn route(request: &Request, store: &Arc<Store>) -> Response {
             ]),
         ),
         (Method::Get, "/api/presets") => {
-            let rockets = presets::all()
-                .iter()
-                .map(model::rocket_to_json)
-                .collect();
+            let rockets = presets::all().iter().map(model::rocket_to_json).collect();
             Response::json(200, &object(vec![("rockets", json::array(rockets))]))
         }
         (Method::Get, "/api/scripts") => {
@@ -280,13 +281,17 @@ fn export(request: &Request, store: &Arc<Store>, kind: &str) -> Response {
     };
     match kind {
         "csv" => match run.csv() {
-            Some(csv) => Response::new(200, "text/csv; charset=utf-8", csv)
-                .with_header("Content-Disposition", "attachment; filename=\"orbit-trajectory.csv\""),
+            Some(csv) => Response::new(200, "text/csv; charset=utf-8", csv).with_header(
+                "Content-Disposition",
+                "attachment; filename=\"orbit-trajectory.csv\"",
+            ),
             None => Response::error(409, "run has no CSV yet"),
         },
         _ => match run.report() {
-            Some(report) => Response::new(200, "text/plain; charset=utf-8", report)
-                .with_header("Content-Disposition", "attachment; filename=\"orbit-report.txt\""),
+            Some(report) => Response::new(200, "text/plain; charset=utf-8", report).with_header(
+                "Content-Disposition",
+                "attachment; filename=\"orbit-report.txt\"",
+            ),
             None => Response::error(409, "run has no report yet"),
         },
     }
@@ -325,8 +330,15 @@ fn execute_run(record: Arc<RunRecord>, value: Value) {
     record.finish(value, csv, report, summary);
 }
 
-fn serve_events(stream: &mut TcpStream, request: &Request, store: &Arc<Store>) -> std::io::Result<()> {
-    let id = match request.query_param("run").and_then(|v| v.parse::<u64>().ok()) {
+fn serve_events(
+    stream: &mut TcpStream,
+    request: &Request,
+    store: &Arc<Store>,
+) -> std::io::Result<()> {
+    let id = match request
+        .query_param("run")
+        .and_then(|v| v.parse::<u64>().ok())
+    {
         Some(id) => id,
         None => {
             return write_response(stream, &Response::error(400, "missing run id"), false);
@@ -338,7 +350,9 @@ fn serve_events(stream: &mut TcpStream, request: &Request, store: &Arc<Store>) -
     };
     let (past, receiver) = match run.subscribe() {
         Some(v) => v,
-        None => return write_response(stream, &Response::error(429, "too many subscribers"), false),
+        None => {
+            return write_response(stream, &Response::error(429, "too many subscribers"), false)
+        }
     };
     stream.set_write_timeout(Some(Duration::from_secs(30)))?;
     stream.write_all(
@@ -389,10 +403,13 @@ mod tests {
 
     #[test]
     fn token_check_is_exact() {
-        let request = crate::http::parse_head(b"GET /api/health?token=abc HTTP/1.1\r\n\r\n").unwrap();
+        let request =
+            crate::http::parse_head(b"GET /api/health?token=abc HTTP/1.1\r\n\r\n").unwrap();
         assert!(authorized(&request, "abc"));
         assert!(!authorized(&request, "abd"));
-        let request = crate::http::parse_head(b"GET /api/health HTTP/1.1\r\nX-Orbit-Token: abc\r\n\r\n").unwrap();
+        let request =
+            crate::http::parse_head(b"GET /api/health HTTP/1.1\r\nX-Orbit-Token: abc\r\n\r\n")
+                .unwrap();
         assert!(authorized(&request, "abc"));
     }
 

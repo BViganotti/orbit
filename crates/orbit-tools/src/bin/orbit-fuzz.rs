@@ -15,10 +15,7 @@ fn main() {
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--rounds" => {
-                rounds = args
-                    .next()
-                    .and_then(|v| v.parse().ok())
-                    .unwrap_or(100_000);
+                rounds = args.next().and_then(|v| v.parse().ok()).unwrap_or(100_000);
             }
             "--corpus" => corpus = args.next(),
             _ => {}
@@ -127,13 +124,19 @@ fn main() {
             fields.push(("rocket_id".to_string(), Value::String("atlas".into())));
         }
         if i % 3 == 0 {
-            fields.push(("script_id".to_string(), Value::String("lunar-atlas-100".into())));
+            fields.push((
+                "script_id".to_string(),
+                Value::String("lunar-atlas-100".into()),
+            ));
         }
         fields.push((
             "lunar_altitude_m".to_string(),
             json::number(rng.range(-1.0e7, 1.0e8)),
         ));
-        fields.push(("epoch_s".to_string(), json::number(rng.range(-1.0e12, 1.0e12))));
+        fields.push((
+            "epoch_s".to_string(),
+            json::number(rng.range(-1.0e12, 1.0e12)),
+        ));
         let value = Value::Object(fields);
         match catch_unwind(AssertUnwindSafe(|| model::parse_mission(&value))) {
             Ok(Ok(_)) => mission_ok += 1,
@@ -165,13 +168,21 @@ fn main() {
             continue;
         }
         let outcome = catch_unwind(AssertUnwindSafe(|| {
-            orbit_flight::ascent::run_ascent(&rocket, &orbit_flight::nbody::Ephemeris::default(), 0.0, &config)
+            orbit_flight::ascent::run_ascent(
+                &rocket,
+                &orbit_flight::nbody::Ephemeris::default(),
+                0.0,
+                &config,
+            )
         }));
         match outcome {
             Ok(Ok(result)) => {
                 ascents += 1;
                 let ok = result.state.is_finite()
-                    && result.samples.iter().all(|s| s.position.is_finite() && s.speed.is_finite());
+                    && result
+                        .samples
+                        .iter()
+                        .all(|s| s.position.is_finite() && s.speed.is_finite());
                 if !ok {
                     failures += 1;
                     eprintln!("non-finite ascent sample at iteration {i}");

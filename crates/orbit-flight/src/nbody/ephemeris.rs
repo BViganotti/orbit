@@ -5,9 +5,7 @@
 //! planning approximation, not a high-precision ephemeris. Epochs are free
 //! parameters, which lets the planner choose a favourable lunar phase.
 
-use orbit_core::constants::{
-    AU, DAY, MOON_ORBIT_RADIUS, MOON_SIDEREAL_PERIOD, MU_EARTH, YEAR,
-};
+use orbit_core::constants::{AU, DAY, MOON_ORBIT_RADIUS, MOON_SIDEREAL_PERIOD, MU_EARTH, YEAR};
 use orbit_core::math::Vec2;
 
 use super::body::{Body, BodyState};

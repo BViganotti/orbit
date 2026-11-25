@@ -297,7 +297,10 @@ pub fn run_mission(rocket: &Rocket, config: &MissionConfig) -> Result<MissionRes
         detail: format!("{} leaving the pad", rocket.name),
     });
     for ev in &ascent.events {
-        if matches!(ev.kind, crate::ascent::AscentEventKind::StageSeparation { .. }) {
+        if matches!(
+            ev.kind,
+            crate::ascent::AscentEventKind::StageSeparation { .. }
+        ) {
             events.push(MissionEvent {
                 t: epoch + ev.t,
                 phase: Phase::Ascent,
@@ -383,8 +386,14 @@ pub fn run_mission(rocket: &Rocket, config: &MissionConfig) -> Result<MissionRes
     }
     state = circ_state;
     t = circ_t;
-    let parking_elements = elements(state.position, state.velocity, orbit_core::constants::MU_EARTH);
-    let parking_altitude = parking_elements.map(|e| e.periapsis - R_EARTH).unwrap_or(0.0);
+    let parking_elements = elements(
+        state.position,
+        state.velocity,
+        orbit_core::constants::MU_EARTH,
+    );
+    let parking_altitude = parking_elements
+        .map(|e| e.periapsis - R_EARTH)
+        .unwrap_or(0.0);
     events.push(MissionEvent {
         t,
         phase: Phase::Parking,
@@ -395,7 +404,10 @@ pub fn run_mission(rocket: &Rocket, config: &MissionConfig) -> Result<MissionRes
             parking_elements.map(|e| e.eccentricity).unwrap_or(1.0)
         ),
     });
-    if parking_elements.map(|e| e.eccentricity > 0.05).unwrap_or(true) {
+    if parking_elements
+        .map(|e| e.eccentricity > 0.05)
+        .unwrap_or(true)
+    {
         let mut result = MissionResult::failed(
             MissionStatus::ParkingFailed,
             "parking orbit is not circular enough for transfer planning",
@@ -459,7 +471,12 @@ pub fn run_mission(rocket: &Rocket, config: &MissionConfig) -> Result<MissionRes
             return Ok(result);
         }
     };
-    push_coast_samples(&mut samples, &parking_coast.samples, Phase::Parking, vehicle.mass);
+    push_coast_samples(
+        &mut samples,
+        &parking_coast.samples,
+        Phase::Parking,
+        vehicle.mass,
+    );
     state = parking_coast.state;
     t = parking_coast.t;
 
@@ -515,7 +532,10 @@ pub fn run_mission(rocket: &Rocket, config: &MissionConfig) -> Result<MissionRes
         t: tli.t,
         phase: Phase::Transfer,
         kind: EventKind::TliCutoff,
-        detail: format!("{:.0} m/s delivered over {:.0} s", tli.delta_v, tli.duration),
+        detail: format!(
+            "{:.0} m/s delivered over {:.0} s",
+            tli.delta_v, tli.duration
+        ),
     });
     state = tli.state;
     t = tli.t;
@@ -551,7 +571,12 @@ pub fn run_mission(rocket: &Rocket, config: &MissionConfig) -> Result<MissionRes
             return Ok(result);
         }
     };
-    push_coast_samples(&mut samples, &transfer_coast.samples, Phase::Transfer, vehicle.mass);
+    push_coast_samples(
+        &mut samples,
+        &transfer_coast.samples,
+        Phase::Transfer,
+        vehicle.mass,
+    );
     if transfer_coast.moon_soi_time.is_some() {
         events.push(MissionEvent {
             t: transfer_coast.moon_soi_time.unwrap_or(t),
@@ -719,7 +744,10 @@ mod tests {
         assert!(result.delta_v_transfer > 2500.0);
         assert!(result.delta_v_capture > 500.0);
         assert!(result.samples.len() > 100);
-        assert!(result.events.iter().any(|e| e.kind == EventKind::LunarOrbit));
+        assert!(result
+            .events
+            .iter()
+            .any(|e| e.kind == EventKind::LunarOrbit));
     }
 
     #[test]
@@ -729,7 +757,10 @@ mod tests {
         let b = run_mission(&rocket, &MissionConfig::default()).unwrap();
         assert_eq!(a.status, b.status);
         assert_eq!(a.total_time, b.total_time);
-        assert_eq!(a.lunar.unwrap().elements.eccentricity, b.lunar.unwrap().elements.eccentricity);
+        assert_eq!(
+            a.lunar.unwrap().elements.eccentricity,
+            b.lunar.unwrap().elements.eccentricity
+        );
     }
 
     #[test]

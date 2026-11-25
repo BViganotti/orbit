@@ -88,16 +88,7 @@ pub fn insert_lunar_orbit(
             if dv < 0.02 {
                 break;
             }
-            let outcome = finite_burn(
-                eph,
-                rocket,
-                &mut v,
-                t,
-                state,
-                delta / dv,
-                dv,
-                config,
-            )?;
+            let outcome = finite_burn(eph, rocket, &mut v, t, state, delta / dv, dv, config)?;
             state = outcome.state;
             t = outcome.t;
             spent += outcome.delta_v;
@@ -227,16 +218,7 @@ fn adjust_lunar_altitude(
             } else {
                 -rel.normalized_or_x().perp()
             };
-            let out = finite_burn(
-                eph,
-                rocket,
-                vehicle,
-                t,
-                state,
-                dir,
-                dv1.abs(),
-                config,
-            )?;
+            let out = finite_burn(eph, rocket, vehicle, t, state, dir, dv1.abs(), config)?;
             state = out.state;
             t = out.t;
             spent += out.delta_v;
@@ -274,16 +256,7 @@ fn adjust_lunar_altitude(
             } else {
                 -rel.normalized_or_x().perp()
             };
-            let out = finite_burn(
-                eph,
-                rocket,
-                vehicle,
-                t,
-                state,
-                dir,
-                dv2.abs(),
-                config,
-            )?;
+            let out = finite_burn(eph, rocket, vehicle, t, state, dir, dv2.abs(), config)?;
             state = out.state;
             t = out.t;
             spent += out.delta_v;
@@ -352,8 +325,16 @@ mod tests {
         let rocket = presets::atlas();
         let (state, t) = near_moon_state(100_000.0, 1.0);
         let mut v = Vehicle::new(2, rocket.stages[2].propellant_mass(), 20_000.0);
-        let out = insert_lunar_orbit(&eph, &rocket, &mut v, t, state, 100_000.0, &BurnConfig::default())
-            .unwrap();
+        let out = insert_lunar_orbit(
+            &eph,
+            &rocket,
+            &mut v,
+            t,
+            state,
+            100_000.0,
+            &BurnConfig::default(),
+        )
+        .unwrap();
         assert!(out.spent_delta_v < 20.0);
         assert!(out.periapsis_altitude > 90_000.0);
         assert!(out.apoapsis_altitude < 400_000.0);
@@ -366,8 +347,16 @@ mod tests {
         let rocket = presets::atlas();
         let (state, t) = near_moon_state(100_000.0, 0.8);
         let mut v = Vehicle::new(2, rocket.stages[2].propellant_mass(), 20_000.0);
-        let out = insert_lunar_orbit(&eph, &rocket, &mut v, t, state, 100_000.0, &BurnConfig::default())
-            .unwrap();
+        let out = insert_lunar_orbit(
+            &eph,
+            &rocket,
+            &mut v,
+            t,
+            state,
+            100_000.0,
+            &BurnConfig::default(),
+        )
+        .unwrap();
         assert!(out.spent_delta_v > 100.0);
         assert!(out.elements.eccentricity < 0.05);
         assert!(out.t > 0.0);

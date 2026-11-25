@@ -32,7 +32,12 @@ impl State {
     }
 
     pub fn to_arrays(self) -> [f64; 4] {
-        [self.position.x, self.position.y, self.velocity.x, self.velocity.y]
+        [
+            self.position.x,
+            self.position.y,
+            self.velocity.x,
+            self.velocity.y,
+        ]
     }
 
     pub fn is_finite(self) -> bool {
@@ -263,7 +268,9 @@ fn step_limit(eph: &Ephemeris, t: f64, state: State, config: &CoastConfig) -> f6
     let moon = eph.position(Body::Moon, t);
     let d = (state.position - moon).norm();
     if d < 5.0e7 {
-        let rel_speed = (state.velocity - eph.velocity(Body::Moon, t)).norm().max(10.0);
+        let rel_speed = (state.velocity - eph.velocity(Body::Moon, t))
+            .norm()
+            .max(10.0);
         let target = (d.max(R_MOON) * 0.003) / rel_speed;
         target.clamp(0.25, config.max_step)
     } else {
@@ -331,8 +338,7 @@ pub fn coast(
             &mut t,
             &mut y,
             &mut h,
-        )
-        {
+        ) {
             Ok(used) => {
                 steps += 1;
                 let state = State::from_arrays(&y).ok_or(PropagationError::NonFinite)?;
@@ -345,8 +351,7 @@ pub fn coast(
                     let moon = eph.position(Body::Moon, ct);
                     let d = (cstate.position - moon).norm();
                     if closest.as_ref().map_or(true, |c| d < c.distance) {
-                        let rel_v =
-                            cstate.velocity - eph.velocity(Body::Moon, ct);
+                        let rel_v = cstate.velocity - eph.velocity(Body::Moon, ct);
                         closest = Some(ClosestApproach {
                             time: ct,
                             state: cstate,
@@ -396,9 +401,7 @@ pub fn coast(
                 }
                 previous = state;
                 if used <= 0.0 {
-                    return Err(PropagationError::Integrator(
-                        IntegratorError::BadStep,
-                    ));
+                    return Err(PropagationError::Integrator(IntegratorError::BadStep));
                 }
             }
             Err(IntegratorError::StepTooSmall) => {

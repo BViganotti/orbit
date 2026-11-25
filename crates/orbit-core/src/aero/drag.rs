@@ -81,9 +81,15 @@ mod tests {
     #[test]
     fn drag_is_zero_in_vacuum_or_at_rest() {
         let model = DragModel::new(0.3, 10.0);
-        assert_eq!(model.acceleration(0.0, Vec2::new(100.0, 0.0), 1000.0), Vec2::ZERO);
+        assert_eq!(
+            model.acceleration(0.0, Vec2::new(100.0, 0.0), 1000.0),
+            Vec2::ZERO
+        );
         assert_eq!(model.acceleration(1.0, Vec2::ZERO, 1000.0), Vec2::ZERO);
-        assert_eq!(model.acceleration(1.0, Vec2::new(1.0, 0.0), 0.0), Vec2::ZERO);
+        assert_eq!(
+            model.acceleration(1.0, Vec2::new(1.0, 0.0), 0.0),
+            Vec2::ZERO
+        );
     }
 
     #[test]

@@ -297,16 +297,7 @@ pub fn circularize(
         if !delta.is_finite() {
             return Err("circularisation delta-v is not finite".into());
         }
-        let outcome = finite_burn(
-            eph,
-            rocket,
-            vehicle,
-            t,
-            state,
-            delta / dv,
-            dv,
-            config,
-        )?;
+        let outcome = finite_burn(eph, rocket, vehicle, t, state, delta / dv, dv, config)?;
         state = outcome.state;
         t = outcome.t;
         spent += outcome.delta_v;
@@ -363,15 +354,8 @@ mod tests {
             Vec2::new(0.0, (MU_EARTH / r).sqrt() * 1.02),
         );
         let mut v = Vehicle::new(0, rocket.stages[0].propellant_mass(), rocket.liftoff_mass());
-        let (out, spent, _, status) = circularize(
-            &eph,
-            &rocket,
-            &mut v,
-            0.0,
-            state,
-            &BurnConfig::default(),
-        )
-        .unwrap();
+        let (out, spent, _, status) =
+            circularize(&eph, &rocket, &mut v, 0.0, state, &BurnConfig::default()).unwrap();
         assert_eq!(status, BurnStatus::Complete);
         assert!(spent > 0.0);
         let el = crate::nbody::elements(out.position, out.velocity, MU_EARTH).unwrap();

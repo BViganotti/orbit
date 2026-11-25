@@ -6,9 +6,7 @@
 //! (up to integration error), which makes this the honest 30-day conservation
 //! test for the project.
 
-use orbit_core::constants::{
-    AU, MOON_ORBIT_RADIUS, MU_EARTH, MU_MOON, MU_SUN, R_EARTH,
-};
+use orbit_core::constants::{AU, MOON_ORBIT_RADIUS, MU_EARTH, MU_MOON, MU_SUN, R_EARTH};
 use orbit_core::math::{DormandPrince, Flow, Vec2};
 
 const G: f64 = 6.674_30e-11;

@@ -9,7 +9,8 @@ fn underpowered_transfer_fails_without_a_lunar_orbit() {
     // Leave the ascent stack intact but cripple the transfer stage.
     let last = rocket.stages.len() - 1;
     rocket.stages[last].tanks[0].propellant_mass = 100.0;
-    let result = run_mission(&rocket, &MissionConfig::default()).expect("pipeline returns a result");
+    let result =
+        run_mission(&rocket, &MissionConfig::default()).expect("pipeline returns a result");
     assert!(!result.success);
     assert!(result.lunar.is_none());
     assert_ne!(result.status, MissionStatus::Success);

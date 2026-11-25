@@ -28,11 +28,7 @@ pub enum Value {
 impl Value {
     pub fn get(&self, key: &str) -> Option<&Value> {
         match self {
-            Value::Object(entries) => entries
-                .iter()
-                .rev()
-                .find(|(k, _)| k == key)
-                .map(|(_, v)| v),
+            Value::Object(entries) => entries.iter().rev().find(|(k, _)| k == key).map(|(_, v)| v),
             _ => None,
         }
     }
@@ -88,7 +84,7 @@ impl Value {
         self.get(key).and_then(Value::as_array)
     }
 
-    pub fn obj(&self, key: &str) -> Option<&[ (String, Value) ]> {
+    pub fn obj(&self, key: &str) -> Option<&[(String, Value)]> {
         self.get(key).and_then(Value::as_object)
     }
 }
@@ -298,32 +294,29 @@ impl<'a> Parser<'a> {
                                 if !(0xDC00..=0xDFFF).contains(&low) {
                                     return Err(JsonError::new("invalid low surrogate", self.pos));
                                 }
-                                let c = 0x10000
-                                    + ((cp - 0xD800) << 10)
-                                    + (low - 0xDC00);
-                                let ch = char::from_u32(c)
-                                    .ok_or_else(|| JsonError::new("invalid code point", self.pos))?;
+                                let c = 0x10000 + ((cp - 0xD800) << 10) + (low - 0xDC00);
+                                let ch = char::from_u32(c).ok_or_else(|| {
+                                    JsonError::new("invalid code point", self.pos)
+                                })?;
                                 out.push(ch);
                             } else if (0xDC00..=0xDFFF).contains(&cp) {
                                 return Err(JsonError::new("unexpected low surrogate", self.pos));
                             } else {
-                                let ch = char::from_u32(cp)
-                                    .ok_or_else(|| JsonError::new("invalid code point", self.pos))?;
+                                let ch = char::from_u32(cp).ok_or_else(|| {
+                                    JsonError::new("invalid code point", self.pos)
+                                })?;
                                 out.push(ch);
                             }
                         }
                         _ => return Err(JsonError::new("invalid escape", self.pos)),
                     }
                 }
-                0x00..=0x1f => {
-                    return Err(JsonError::new("control character in string", self.pos))
-                }
+                0x00..=0x1f => return Err(JsonError::new("control character in string", self.pos)),
                 _ => {
                     // Re-decode UTF-8 from the current position.
                     let start = self.pos - 1;
-                    let width = utf8_width(b).ok_or_else(|| {
-                        JsonError::new("invalid UTF-8 lead byte", start)
-                    })?;
+                    let width = utf8_width(b)
+                        .ok_or_else(|| JsonError::new("invalid UTF-8 lead byte", start))?;
                     if start + width > self.bytes.len() {
                         return Err(JsonError::new("truncated UTF-8 sequence", start));
                     }
