@@ -369,6 +369,34 @@ pub fn mission_to_json(result: &MissionResult) -> Value {
             ]),
         ),
         (
+            "ascent",
+            result
+                .ascent
+                .as_ref()
+                .map(|a| {
+                    object(vec![
+                        ("status", string(format!("{:?}", a.status))),
+                        ("duration", number(round(a.t, 1))),
+                        ("delta_v", number(round(a.delta_v, 1))),
+                        ("max_q", number(round(a.max_q, 1))),
+                        ("max_q_time", number(round(a.max_q_time, 1))),
+                        ("max_g", number(round(a.max_g, 3))),
+                        ("max_altitude", number(round(a.max_altitude, 1))),
+                        ("mass", number(round(a.mass, 1))),
+                        ("stage_index", number(a.stage_index as f64)),
+                        (
+                            "periapsis_altitude",
+                            a.periapsis_altitude().map(|v| number(round(v, 1))).unwrap_or(Value::Null),
+                        ),
+                        (
+                            "apoapsis_altitude",
+                            a.apoapsis_altitude().map(|v| number(round(v, 1))).unwrap_or(Value::Null),
+                        ),
+                    ])
+                })
+                .unwrap_or(Value::Null),
+        ),
+        (
             "transfer",
             result
                 .transfer
