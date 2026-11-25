@@ -352,8 +352,20 @@ pub fn mission_to_json(result: &MissionResult) -> Value {
                 ("propellant_remaining", number(round(result.propellant_remaining, 1))),
                 ("final_mass", number(round(result.final_mass, 1))),
                 ("target_altitude", number(round(result.target_altitude, 1))),
-                ("periapsis_error", number(round(result.periapsis_error.unwrap_or(f64::NAN), 1))),
-                ("apoapsis_error", number(round(result.apoapsis_error.unwrap_or(f64::NAN), 1))),
+                (
+                    "periapsis_error",
+                    result
+                        .periapsis_error
+                        .map(|v| number(round(v, 1)))
+                        .unwrap_or(Value::Null),
+                ),
+                (
+                    "apoapsis_error",
+                    result
+                        .apoapsis_error
+                        .map(|v| number(round(v, 1)))
+                        .unwrap_or(Value::Null),
+                ),
             ]),
         ),
         (
