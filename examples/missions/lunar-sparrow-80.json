@@ -1,0 +1,11 @@
+{
+  "mission": "lunar-sparrow-80",
+  "description": "Low lunar orbit with the small launcher.",
+  "rocket_id": "sparrow",
+  "lunar_altitude_km": 80,
+  "epoch_days": 4.5,
+  "moon_phase_deg": 180,
+  "sun_phase_deg": 0,
+  "parking_altitude_km": 400,
+  "tolerance": 0.01
+}
