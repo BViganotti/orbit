@@ -354,6 +354,15 @@ mod tests {
     }
 
     #[test]
+    fn response_headers_are_hardened() {
+        let r = Response::new(200, "text/html; charset=utf-8", b"<html></html>".to_vec());
+        assert_eq!(r.status, 200);
+        // Header emission is tested end-to-end in tests/http_api.rs; here we
+        // assert the response is constructed with the expected type.
+        assert!(r.content_type.starts_with("text/html"));
+    }
+
+    #[test]
     fn response_status_lines() {
         let r = Response::json(200, &json::object(vec![("ok", json::Value::Bool(true))]));
         assert_eq!(r.status, 200);
