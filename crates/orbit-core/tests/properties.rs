@@ -128,3 +128,38 @@ fn atmosphere_and_drag_are_bounded_for_random_inputs() {
         }
     }
 }
+
+#[test]
+fn random_rockets_never_panic_validation() {
+    use orbit_core::rocket::{Engine, Propellant, Rocket, Stage, Tank};
+    let mut rng = Rng::new(0x0b0c_0001);
+    for _ in 0..10_000 {
+        let engine = Engine::new(
+            "E",
+            rng.range(-1e5, 5e6),
+            rng.range(-1e5, 5e6),
+            rng.range(-10.0, 500.0),
+            rng.range(-10.0, 500.0),
+            rng.range(-10.0, 1e4),
+        );
+        let mut stage = Stage::new("S", rng.range(-1e3, 1e5), engine, rng.integer(0, 70) as u32);
+        stage.reserve_fraction = rng.range(-0.5, 0.8);
+        let tank = Tank::new(
+            "T",
+            rng.range(-1e3, 3e6),
+            rng.range(-1e3, 1e5),
+            Propellant::new("P", rng.range(-10.0, 4000.0)),
+        );
+        stage.tanks.push(tank);
+        let mut rocket = Rocket::new("R", rng.range(-1e3, 2e6));
+        rocket.drag_area = rng.range(-10.0, 2000.0);
+        rocket.drag_coefficient = rng.range(-1.0, 10.0);
+        rocket.stages.push(stage);
+        let result = rocket.validate();
+        if result.is_ok() {
+            let s = rocket.summary();
+            assert!(s.total_delta_v.is_finite() && s.total_delta_v > 0.0);
+            assert!(s.liftoff_mass.is_finite() && s.liftoff_mass > 0.0);
+        }
+    }
+}
