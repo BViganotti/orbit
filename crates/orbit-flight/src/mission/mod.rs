@@ -678,7 +678,7 @@ pub fn run_mission(rocket: &Rocket, config: &MissionConfig) -> Result<MissionRes
         lunar: Some(lunar),
         events,
         samples,
-        total_time: t,
+        total_time: (t - epoch).max(0.0),
         delta_v_ascent: ascent_dv,
         delta_v_parking: circ_spent,
         delta_v_transfer: tli.delta_v,
