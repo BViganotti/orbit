@@ -103,3 +103,28 @@ fn root_finders_solve_random_linear_and_quadratic_functions() {
         assert!((r.x - root).abs() < 1e-6);
     }
 }
+
+#[test]
+fn atmosphere_and_drag_are_bounded_for_random_inputs() {
+    use orbit_core::aero::{density, dynamic_pressure, pressure_ratio, speed_of_sound, DragModel};
+    let mut rng = Rng::new(0xa3e0_0001);
+    let model = DragModel::new(0.3, 10.0);
+    for _ in 0..10_000 {
+        let h = rng.range(-10_000.0, 2_000_000.0);
+        let d = density(h);
+        assert!(d.is_finite() && d >= 0.0 && d <= 1.3);
+        let p = pressure_ratio(h);
+        assert!(p.is_finite() && (0.0..=1.0).contains(&p));
+        let speed = rng.range(0.0, 20_000.0);
+        let q = dynamic_pressure(h, speed);
+        assert!(q.is_finite() && q >= 0.0);
+        let a = speed_of_sound(h);
+        assert!(a.is_finite() && a >= 0.0 && a < 1000.0);
+        let v = Vec2::new(rng.range(-20_000.0, 20_000.0), rng.range(-20_000.0, 20_000.0));
+        let drag = model.acceleration(d, v, rng.range(1.0, 1_000_000.0));
+        assert!(drag.is_finite());
+        if v.norm() > 1e-6 && d > 0.0 {
+            assert!(drag.dot(v) <= 1e-9);
+        }
+    }
+}
