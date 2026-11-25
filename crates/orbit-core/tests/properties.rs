@@ -77,3 +77,32 @@ fn adaptive_integrator_respects_tolerance() {
     assert!((y[0] - 1.0).abs() < 1e-8, "x={}", y[0]);
     assert!(y[1].abs() < 1e-8, "v={}", y[1]);
 }
+
+#[test]
+fn root_finders_solve_random_linear_and_quadratic_functions() {
+    use orbit_core::math::{bisect, newton, secant};
+    let mut rng = Rng::new(0x7207_0001);
+    for _ in 0..5_000 {
+        let root = rng.range(-100.0, 100.0);
+        let slope = rng.range(0.1, 10.0);
+        let offset = rng.range(-50.0, 50.0);
+        let f = |x: f64| slope * (x - root) + offset;
+        if let Some(r) = bisect(f, root - 100.0, root + 100.0, 1e-10, 200) {
+            assert!((r.x - root + offset / slope).abs() < 1e-6);
+        }
+        if let Some(r) = secant(f, root - 5.0, root + 5.0, 1e-10, 50) {
+            assert!((r.x - root + offset / slope).abs() < 1e-6);
+        }
+        if let Some(r) = newton(f, |_| slope, root + 3.0, 1e-10, 20) {
+            assert!((r.x - root + offset / slope).abs() < 1e-6);
+        }
+        // Quadratic with real roots.
+        let other = rng.range(-100.0, 100.0);
+        let q = |x: f64| (x - root) * (x - other);
+        let lo = root.min(other) - 1.0;
+        let hi = root.max(other) + 1.0;
+        let r = bisect(q, lo, hi, 1e-10, 200).unwrap();
+        let nearest = if (r.x - root).abs() < (r.x - other).abs() { root } else { other };
+        assert!((r.x - nearest).abs() < 1e-6);
+    }
+}
