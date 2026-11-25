@@ -2,7 +2,7 @@
 
 use std::io::Write;
 use std::net::{SocketAddr, TcpListener, TcpStream};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
@@ -42,6 +42,17 @@ pub struct Server {
     token: String,
     store: Arc<Store>,
     open_browser: bool,
+    active: Arc<AtomicUsize>,
+}
+
+const MAX_CONNECTIONS: usize = 64;
+
+struct ConnectionGuard(Arc<AtomicUsize>);
+
+impl Drop for ConnectionGuard {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::Relaxed);
+    }
 }
 
 impl Server {
@@ -52,6 +63,7 @@ impl Server {
             token: config.token.clone().unwrap_or_else(random_token),
             store: Arc::new(Store::new()),
             open_browser: config.open_browser,
+            active: Arc::new(AtomicUsize::new(0)),
         })
     }
 
@@ -93,7 +105,19 @@ impl Server {
                 Ok((stream, _addr)) => {
                     let token = self.token.clone();
                     let store = self.store.clone();
+                    let active = self.active.clone();
                     thread::spawn(move || {
+                        if active.fetch_add(1, Ordering::Relaxed) >= MAX_CONNECTIONS {
+                            active.fetch_sub(1, Ordering::Relaxed);
+                            let mut stream = stream;
+                            let _ = write_response(
+                                &mut stream,
+                                &Response::error(503, "too many concurrent connections"),
+                                false,
+                            );
+                            return;
+                        }
+                        let _guard = ConnectionGuard(active);
                         let _ = handle_connection(stream, &token, &store);
                     });
                 }

@@ -103,6 +103,7 @@ fn status_text(status: u16) -> &'static str {
         413 => "Payload Too Large",
         429 => "Too Many Requests",
         500 => "Internal Server Error",
+        503 => "Service Unavailable",
         _ => "Unknown",
     }
 }
