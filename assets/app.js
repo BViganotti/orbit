@@ -755,5 +755,14 @@ $("conservation-btn").addEventListener("click", async () => {
   }
 });
 
+document.addEventListener("keydown", (event) => {
+  const tag = (event.target && event.target.tagName || "").toLowerCase();
+  if (["input", "select", "textarea", "button"].includes(tag)) return;
+  const tabs = { "1": "garage", "2": "mission", "3": "plots", "4": "events" };
+  if (tabs[event.key]) {
+    const button = document.querySelector(`.tab-btn[data-tab='${tabs[event.key]}']`);
+    if (button) button.click();
+  }
+});
 window.addEventListener("resize", () => { if (state.result) drawPlots(state.result); });
 boot();
