@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/orbit-core",
+    "crates/orbit-flight",
+    "crates/orbit-studio",
+    "crates/orbit-tools",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT"
+authors = ["Orbit contributors"]
+repository = "https://github.com/BViganotti/orbit"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+
+[profile.test]
+opt-level = 1

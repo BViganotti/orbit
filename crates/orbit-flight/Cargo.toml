@@ -1,0 +1,10 @@
+[package]
+name = "orbit-flight"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Ascent, n-body flight, maneuver planning and mission diagnostics for Orbit"
+
+[dependencies]
+orbit-core = { path = "../orbit-core" }

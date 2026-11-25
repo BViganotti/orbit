@@ -1,0 +1,9 @@
+[package]
+name = "orbit-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Rocket, mass, atmosphere and numerical core for Orbit"
+
+[dependencies]
