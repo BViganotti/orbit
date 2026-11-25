@@ -1,0 +1,11 @@
+{
+  "mission": "lunar-heron-100",
+  "description": "Medium launcher, full lunar insertion.",
+  "rocket_id": "heron",
+  "lunar_altitude_km": 100,
+  "epoch_days": 0.5,
+  "moon_phase_deg": 20,
+  "sun_phase_deg": 200,
+  "parking_altitude_km": 400,
+  "tolerance": 0.01
+}
