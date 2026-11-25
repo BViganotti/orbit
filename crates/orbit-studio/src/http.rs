@@ -369,3 +369,23 @@ mod tests {
         assert!(r.content_type.starts_with("application/json"));
     }
 }
+
+#[cfg(test)]
+mod hardening_tests {
+    use super::*;
+
+    #[test]
+    fn excessive_query_parameters_are_rejected() {
+        let query = (0..65).map(|i| format!("k{i}=v")).collect::<Vec<_>>().join("&");
+        let head = format!("GET /api/health?{query} HTTP/1.1\r\n\r\n");
+        assert!(parse_head(head.as_bytes()).is_err());
+    }
+
+    #[test]
+    fn oversized_targets_and_headers_are_rejected() {
+        let long_path = format!("GET /{} HTTP/1.1\r\n\r\n", "a".repeat(5000));
+        assert!(parse_head(long_path.as_bytes()).is_err());
+        let header = format!("GET / HTTP/1.1\r\nX: {}\r\n\r\n", "a".repeat(5000));
+        assert!(parse_head(header.as_bytes()).is_err());
+    }
+}
