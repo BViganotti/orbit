@@ -257,46 +257,46 @@ pub fn falconet() -> Rocket {
 pub fn voyager() -> Rocket {
     let s1 = Stage::new(
         "Voyager core",
-        9800.0,
-        engine("V-14", 2_850_000.0, 2_450_000.0, 306.0, 282.0, 980.0),
+        12_000.0,
+        engine("V-16", 3_250_000.0, 2_800_000.0, 309.0, 285.0, 1120.0),
         5,
     )
     .with_tank(Tank::new(
         "Core tank",
-        560_000.0,
-        7600.0,
+        680_000.0,
+        9200.0,
         Propellant::rp1_lox(),
     ));
     let s2 = Stage::new(
         "Voyager second",
-        3100.0,
-        engine("V-5", 610_000.0, 470_000.0, 360.0, 308.0, 350.0),
+        3800.0,
+        engine("V-4", 700_000.0, 540_000.0, 362.0, 310.0, 400.0),
         1,
     )
     .with_tank(Tank::new(
         "Second tank",
-        82_000.0,
-        1750.0,
+        108_000.0,
+        2350.0,
         Propellant::hydrogen_lox(),
     ));
     let s3 = Stage::new(
         "Voyager transfer",
-        900.0,
-        engine("V-1", 95_000.0, 60_000.0, 384.0, 335.0, 115.0),
+        1100.0,
+        engine("V-1", 120_000.0, 80_000.0, 382.0, 334.0, 130.0),
         1,
     )
     .with_tank(Tank::new(
         "Transfer tank",
-        16_000.0,
-        350.0,
+        19_000.0,
+        400.0,
         Propellant::hydrogen_lox(),
     ));
     let mut r = Rocket::new("Voyager", 3500.0)
         .with_stage(s1)
         .with_stage(s2)
         .with_stage(s3);
-    r.drag_area = 21.0;
-    r.drag_coefficient = 0.36;
+    r.drag_area = 25.0;
+    r.drag_coefficient = 0.35;
     r
 }
 

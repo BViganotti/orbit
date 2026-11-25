@@ -37,7 +37,7 @@ pub struct BurnOutcome {
 }
 
 /// Configuration for a finite burn.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct BurnConfig {
     pub dt: f64,
     pub max_duration: f64,

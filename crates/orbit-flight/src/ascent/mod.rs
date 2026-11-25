@@ -128,6 +128,7 @@ pub struct AscentSample {
     pub pitch: f64,
     pub horizontal_speed: f64,
     pub vertical_speed: f64,
+    pub position: Vec2,
 }
 
 /// How the powered phase ended.
@@ -301,6 +302,7 @@ pub fn run_ascent(
         pitch: std::f64::consts::FRAC_PI_2,
         horizontal_speed: 0.0,
         vertical_speed: 0.0,
+        position,
     }];
     let mut max_q = 0.0;
     let mut max_q_time = 0.0;
@@ -344,7 +346,7 @@ pub fn run_ascent(
             let v_circ = (MU_EARTH / radius_now).sqrt();
             if altitude >= config.target_altitude - 120_000.0
                 && vt >= v_circ * 0.995
-                && vr.abs() < 350.0
+                && vr.abs() < 1200.0
             {
                 status = AscentStatus::OrbitInsertion;
                 events.push(make_event(elapsed, current, AscentEventKind::EngineCutoff));
@@ -378,6 +380,7 @@ pub fn run_ascent(
                     pitch: 0.0,
                     horizontal_speed: current.velocity.dot(east),
                     vertical_speed: current.velocity.dot(up),
+                    position: current.position,
                 });
                 last_sample = t;
                 continue;
@@ -472,6 +475,7 @@ pub fn run_ascent(
                 pitch,
                 horizontal_speed: st.velocity.dot(east),
                 vertical_speed: st.velocity.dot(up),
+                position: st.position,
             });
             last_sample = t;
             if samples.len() > 100_000 {

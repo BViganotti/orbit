@@ -213,13 +213,11 @@ fn closest_on_segment(
             best_s = s;
         }
     }
-    if best_d > 5.0e7 {
-        return None;
-    }
     let mut lo = (best_s - 1.0 / N as f64).max(0.0);
     let mut hi = (best_s + 1.0 / N as f64).min(1.0);
     let inv_phi = (5.0f64.sqrt() - 1.0) * 0.5;
-    for _ in 0..36 {
+    let refine = best_d <= 5.0e7;
+    for _ in 0..if refine { 36 } else { 0 } {
         let c = hi - inv_phi * (hi - lo);
         let d = lo + inv_phi * (hi - lo);
         let pc = hermite(s0.position, s0.velocity, s1.position, s1.velocity, dt, c);

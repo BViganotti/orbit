@@ -9,5 +9,5 @@ pub mod stage;
 
 pub use checks::{CheckReport, Issue, Severity};
 pub use engine::Engine;
-pub use rocket::Rocket;
+pub use rocket::{Rocket, RocketSummary};
 pub use stage::{Propellant, Stage, Tank};

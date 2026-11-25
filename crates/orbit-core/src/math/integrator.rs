@@ -302,7 +302,7 @@ impl DormandPrince {
                 return Err(IntegratorError::NonFinite);
             }
         }
-        let mut k = [[0.0f64; 8]; 8];
+        let mut k = vec![vec![0.0f64; n]; 7];
         let mut accepted = false;
         let mut used = 0.0;
         for _attempt in 0..64 {
@@ -314,7 +314,7 @@ impl DormandPrince {
             let mut y5 = vec![0.0; n];
             let mut y4 = vec![0.0; n];
             // k[0] is the derivative at (t, y).
-            sys.derivative(*t, y, &mut k[0][..n]);
+            sys.derivative(*t, y, &mut k[0]);
             let mut bad = false;
             for s in 1..7 {
                 for i in 0..n {
@@ -330,7 +330,7 @@ impl DormandPrince {
                 if bad {
                     break;
                 }
-                sys.derivative(*t + DP.c[s] * hh, &stage, &mut k[s][..n]);
+                sys.derivative(*t + DP.c[s] * hh, &stage, &mut k[s]);
             }
             if bad {
                 *h *= 0.25;
