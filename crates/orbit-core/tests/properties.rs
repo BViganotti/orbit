@@ -96,13 +96,10 @@ fn root_finders_solve_random_linear_and_quadratic_functions() {
         if let Some(r) = newton(f, |_| slope, root + 3.0, 1e-10, 20) {
             assert!((r.x - root + offset / slope).abs() < 1e-6);
         }
-        // Quadratic with real roots.
-        let other = rng.range(-100.0, 100.0);
+        // Quadratic with two well-separated real roots; bracket just the first.
+        let other = root + rng.range(5.0, 100.0);
         let q = |x: f64| (x - root) * (x - other);
-        let lo = root.min(other) - 1.0;
-        let hi = root.max(other) + 1.0;
-        let r = bisect(q, lo, hi, 1e-10, 200).unwrap();
-        let nearest = if (r.x - root).abs() < (r.x - other).abs() { root } else { other };
-        assert!((r.x - nearest).abs() < 1e-6);
+        let r = bisect(q, root - 1.0, root + 1.0, 1e-10, 200).unwrap();
+        assert!((r.x - root).abs() < 1e-6);
     }
 }
