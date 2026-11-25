@@ -1,0 +1,100 @@
+{
+  "name": "Voyager",
+  "payload_mass": 3500,
+  "drag_area": 25,
+  "drag_coefficient": 0.35,
+  "stages": [
+    {
+      "name": "Voyager core",
+      "structure_mass": 12000,
+      "engine_count": 5,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "V-16",
+        "thrust_vacuum": 3250000,
+        "thrust_sea_level": 2800000,
+        "isp_vacuum": 309,
+        "isp_sea_level": 285,
+        "mass": 1120,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Core tank",
+          "propellant_mass": 680000,
+          "dry_mass": 9200,
+          "propellant": {
+            "name": "RP-1/LOX",
+            "density": 1020
+          }
+        }
+      ]
+    },
+    {
+      "name": "Voyager second",
+      "structure_mass": 3800,
+      "engine_count": 1,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "V-4",
+        "thrust_vacuum": 700000,
+        "thrust_sea_level": 540000,
+        "isp_vacuum": 362,
+        "isp_sea_level": 310,
+        "mass": 400,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Second tank",
+          "propellant_mass": 108000,
+          "dry_mass": 2350,
+          "propellant": {
+            "name": "LH2/LOX",
+            "density": 363
+          }
+        }
+      ]
+    },
+    {
+      "name": "Voyager transfer",
+      "structure_mass": 1100,
+      "engine_count": 1,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "V-1",
+        "thrust_vacuum": 120000,
+        "thrust_sea_level": 80000,
+        "isp_vacuum": 382,
+        "isp_sea_level": 334,
+        "mass": 130,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Transfer tank",
+          "propellant_mass": 19000,
+          "dry_mass": 400,
+          "propellant": {
+            "name": "LH2/LOX",
+            "density": 363
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "liftoff_mass": 845480,
+    "dry_mass": 38480,
+    "propellant_mass": 807000,
+    "payload_fraction": 0.00414,
+    "total_delta_v": 16098.2,
+    "liftoff_twr": 1.689,
+    "vacuum_twr_first_stage": 1.96,
+    "total_burn_time": 1267.7,
+    "stage_count": 3
+  }
+}
