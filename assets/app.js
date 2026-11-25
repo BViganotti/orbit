@@ -471,6 +471,9 @@ function renderResult(result) {
   setText("result-time", `${fmt(metrics.total_time / 86400, 2)} d`);
   setText("result-residual", `${fmt(transfer.residual || 0, 1)} m`);
   setText("result-mass", `${fmt((metrics.final_mass || 0) / 1000, 2)} t`);
+  const ascent = result.ascent || {};
+  setText("result-maxq", `${fmt((ascent.max_q || 0) / 1000, 1)} kPa`);
+  setText("result-maxg", `${fmt(ascent.max_g || 0, 2)} g`);
   setText("result-message", result.message || "");
   $("export-csv").disabled = false;
   $("export-report").disabled = false;
