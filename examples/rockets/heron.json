@@ -1,0 +1,100 @@
+{
+  "name": "Heron",
+  "payload_mass": 2200,
+  "drag_area": 16.5,
+  "drag_coefficient": 0.34,
+  "stages": [
+    {
+      "name": "Heron core",
+      "structure_mass": 7800,
+      "engine_count": 4,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "H-12",
+        "thrust_vacuum": 2400000,
+        "thrust_sea_level": 2050000,
+        "isp_vacuum": 305,
+        "isp_sea_level": 281,
+        "mass": 820,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Core tank",
+          "propellant_mass": 420000,
+          "dry_mass": 5600,
+          "propellant": {
+            "name": "RP-1/LOX",
+            "density": 1020
+          }
+        }
+      ]
+    },
+    {
+      "name": "Heron upper",
+      "structure_mass": 2400,
+      "engine_count": 1,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "H-3",
+        "thrust_vacuum": 420000,
+        "thrust_sea_level": 330000,
+        "isp_vacuum": 356,
+        "isp_sea_level": 305,
+        "mass": 240,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Upper tank",
+          "propellant_mass": 48000,
+          "dry_mass": 1100,
+          "propellant": {
+            "name": "LH2/LOX",
+            "density": 363
+          }
+        }
+      ]
+    },
+    {
+      "name": "Heron transfer",
+      "structure_mass": 950,
+      "engine_count": 1,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "H-1",
+        "thrust_vacuum": 130000,
+        "thrust_sea_level": 90000,
+        "isp_vacuum": 380,
+        "isp_sea_level": 332,
+        "mass": 140,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Transfer tank",
+          "propellant_mass": 24000,
+          "dry_mass": 480,
+          "propellant": {
+            "name": "LH2/LOX",
+            "density": 363
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "liftoff_mass": 516190,
+    "dry_mass": 24190,
+    "propellant_mass": 492000,
+    "payload_fraction": 0.004262,
+    "total_delta_v": 15698.2,
+    "liftoff_twr": 1.62,
+    "vacuum_twr_first_stage": 1.896,
+    "total_burn_time": 1217.8,
+    "stage_count": 3
+  }
+}
