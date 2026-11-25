@@ -1,0 +1,11 @@
+{
+  "mission": "lunar-kestrel-80",
+  "description": "Tight 80 km lunar orbit.",
+  "rocket_id": "kestrel",
+  "lunar_altitude_km": 80,
+  "epoch_days": 3,
+  "moon_phase_deg": 120,
+  "sun_phase_deg": 300,
+  "parking_altitude_km": 400,
+  "tolerance": 0.01
+}
