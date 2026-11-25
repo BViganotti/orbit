@@ -46,3 +46,20 @@ fn prograde_burn_adds_energy_and_retrograde_removes_it() {
     assert!(specific_energy(lowered.state) < e0);
     assert!(down.mass < rocket.liftoff_mass());
 }
+
+#[test]
+fn tli_planner_solves_a_real_perilune_with_small_residual() {
+    use orbit_flight::plan::plan_tli;
+
+    let rocket = presets::atlas();
+    let eph = Ephemeris::default();
+    let state = parking();
+    let vehicle = Vehicle::new(0, rocket.stages[0].propellant_mass(), rocket.liftoff_mass());
+    let plan = plan_tli(&eph, &rocket, &vehicle, 0.0, state, 100_000.0).unwrap();
+    assert!(plan.evaluations > 20);
+    assert!(plan.burn_delta_v > 2_500.0 && plan.burn_delta_v < 4_000.0);
+    assert!(plan.closest.altitude.is_finite());
+    assert!((plan.closest.altitude - 100_000.0).abs() < 1_000.0);
+    assert!(plan.residual.abs() < 1_000.0);
+    assert!(plan.closest.relative_speed > 0.0);
+}
