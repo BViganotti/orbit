@@ -1,0 +1,100 @@
+{
+  "name": "Falconet",
+  "payload_mass": 1200,
+  "drag_area": 12.2,
+  "drag_coefficient": 0.33,
+  "stages": [
+    {
+      "name": "Falconet booster",
+      "structure_mass": 5200,
+      "engine_count": 3,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "F-10",
+        "thrust_vacuum": 1950000,
+        "thrust_sea_level": 1680000,
+        "isp_vacuum": 300,
+        "isp_sea_level": 278,
+        "mass": 610,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Booster tank",
+          "propellant_mass": 268000,
+          "dry_mass": 3600,
+          "propellant": {
+            "name": "RP-1/LOX",
+            "density": 1020
+          }
+        }
+      ]
+    },
+    {
+      "name": "Falconet upper",
+      "structure_mass": 1700,
+      "engine_count": 1,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "F-2",
+        "thrust_vacuum": 310000,
+        "thrust_sea_level": 250000,
+        "isp_vacuum": 344,
+        "isp_sea_level": 296,
+        "mass": 190,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Upper tank",
+          "propellant_mass": 28000,
+          "dry_mass": 700,
+          "propellant": {
+            "name": "N2O4/MMH",
+            "density": 1190
+          }
+        }
+      ]
+    },
+    {
+      "name": "Falconet transfer",
+      "structure_mass": 800,
+      "engine_count": 1,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "F-1",
+        "thrust_vacuum": 110000,
+        "thrust_sea_level": 75000,
+        "isp_vacuum": 376,
+        "isp_sea_level": 330,
+        "mass": 120,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Transfer tank",
+          "propellant_mass": 16000,
+          "dry_mass": 350,
+          "propellant": {
+            "name": "LH2/LOX",
+            "density": 363
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "liftoff_mass": 327690,
+    "dry_mass": 15690,
+    "propellant_mass": 312000,
+    "payload_fraction": 0.003662,
+    "total_delta_v": 15281.4,
+    "liftoff_twr": 1.568,
+    "vacuum_twr_first_stage": 1.82,
+    "total_burn_time": 975.8,
+    "stage_count": 3
+  }
+}
