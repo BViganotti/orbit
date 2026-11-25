@@ -1,0 +1,100 @@
+{
+  "name": "Kestrel",
+  "payload_mass": 900,
+  "drag_area": 10.8,
+  "drag_coefficient": 0.32,
+  "stages": [
+    {
+      "name": "Kestrel booster",
+      "structure_mass": 4200,
+      "engine_count": 3,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "K-9",
+        "thrust_vacuum": 1700000,
+        "thrust_sea_level": 1480000,
+        "isp_vacuum": 298,
+        "isp_sea_level": 276,
+        "mass": 560,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Booster tank",
+          "propellant_mass": 238000,
+          "dry_mass": 3200,
+          "propellant": {
+            "name": "RP-1/LOX",
+            "density": 1020
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kestrel upper",
+      "structure_mass": 1500,
+      "engine_count": 1,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "K-2",
+        "thrust_vacuum": 260000,
+        "thrust_sea_level": 205000,
+        "isp_vacuum": 352,
+        "isp_sea_level": 300,
+        "mass": 175,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Upper tank",
+          "propellant_mass": 23500,
+          "dry_mass": 620,
+          "propellant": {
+            "name": "LH2/LOX",
+            "density": 363
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kestrel transfer",
+      "structure_mass": 700,
+      "engine_count": 1,
+      "reserve_fraction": 0,
+      "engine": {
+        "name": "K-1",
+        "thrust_vacuum": 90000,
+        "thrust_sea_level": 60000,
+        "isp_vacuum": 378,
+        "isp_sea_level": 330,
+        "mass": 110,
+        "min_throttle": 0.4,
+        "gimbal_deg": 5
+      },
+      "tanks": [
+        {
+          "name": "Transfer tank",
+          "propellant_mass": 16000,
+          "dry_mass": 350,
+          "propellant": {
+            "name": "LH2/LOX",
+            "density": 363
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "liftoff_mass": 290935,
+    "dry_mass": 13435,
+    "propellant_mass": 277500,
+    "payload_fraction": 0.003093,
+    "total_delta_v": 15677.1,
+    "liftoff_twr": 1.556,
+    "vacuum_twr_first_stage": 1.788,
+    "total_burn_time": 1107.4,
+    "stage_count": 3
+  }
+}
