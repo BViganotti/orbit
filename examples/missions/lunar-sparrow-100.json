@@ -1,0 +1,11 @@
+{
+  "mission": "lunar-sparrow-100",
+  "description": "Methane upper stage demonstration.",
+  "rocket_id": "sparrow",
+  "lunar_altitude_km": 100,
+  "epoch_days": 1.5,
+  "moon_phase_deg": 60,
+  "sun_phase_deg": 240,
+  "parking_altitude_km": 400,
+  "tolerance": 0.01
+}
