@@ -132,6 +132,21 @@ pub fn mission_report(result: &MissionResult) -> String {
     let _ = writeln!(out, "  total             {:>12.1} m/s", total);
     let _ = writeln!(out, "  final mass        {:>12.0} kg", result.final_mass);
     let _ = writeln!(out, "  propellant left   {:>12.0} kg", result.propellant_remaining);
+    if let Some(ascent) = &result.ascent {
+        let _ = writeln!(out);
+        let _ = writeln!(out, "ASCENT");
+        let _ = writeln!(out, "  powered time      {:>12.1} s", ascent.t);
+        let _ = writeln!(out, "  ascent delta-v    {:>12.1} m/s", ascent.delta_v);
+        let _ = writeln!(out, "  max dynamic press {:>12.1} Pa", ascent.max_q);
+        let _ = writeln!(out, "  max acceleration  {:>12.2} g", ascent.max_g);
+        let _ = writeln!(out, "  max altitude      {:>12.1} km", ascent.max_altitude / 1000.0);
+        if let Some(peri) = ascent.periapsis_altitude() {
+            let _ = writeln!(out, "  insertion periapsis {:>10.1} km", peri / 1000.0);
+        }
+        if let Some(apo) = ascent.apoapsis_altitude() {
+            let _ = writeln!(out, "  insertion apoapsis  {:>10.1} km", apo / 1000.0);
+        }
+    }
     if let Some(transfer) = &result.transfer {
         let _ = writeln!(out);
         let _ = writeln!(out, "TRANSFER");
