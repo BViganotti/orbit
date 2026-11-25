@@ -10,13 +10,18 @@ use orbit_studio::model;
 
 fn main() {
     let mut rounds = 100_000usize;
+    let mut corpus: Option<String> = None;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
-        if arg == "--rounds" {
-            rounds = args
-                .next()
-                .and_then(|v| v.parse().ok())
-                .unwrap_or(100_000);
+        match arg.as_str() {
+            "--rounds" => {
+                rounds = args
+                    .next()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(100_000);
+            }
+            "--corpus" => corpus = args.next(),
+            _ => {}
         }
     }
     let previous = panic::take_hook();
@@ -41,6 +46,35 @@ fn main() {
             Err(_) => {
                 failures += 1;
                 eprintln!("panic on random document: {text:?}");
+            }
+        }
+    }
+
+    let mut corpus_files = 0usize;
+    if let Some(dir) = corpus {
+        let entries = match std::fs::read_dir(&dir) {
+            Ok(entries) => entries,
+            Err(error) => {
+                eprintln!("cannot read corpus {dir}: {error}");
+                std::process::exit(2);
+            }
+        };
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.extension().and_then(|e| e.to_str()) != Some("json") {
+                continue;
+            }
+            let text = match std::fs::read_to_string(&path) {
+                Ok(text) if text.len() <= json::MAX_INPUT => text,
+                _ => continue,
+            };
+            corpus_files += 1;
+            match catch_unwind(AssertUnwindSafe(|| json::parse(&text))) {
+                Ok(_) => {}
+                Err(_) => {
+                    failures += 1;
+                    eprintln!("panic on corpus file {path:?}");
+                }
             }
         }
     }
@@ -153,8 +187,8 @@ fn main() {
 
     panic::set_hook(previous);
     println!(
-        "fuzz: {} random documents ({} parsed, {} rejected), rockets {} rejected / {} accepted, missions {} ok / {} rejected, {} ascents, {} failures",
-        rounds, parsed, rejected, rocket_rejected, rocket_accepted, mission_ok, mission_err, ascents, failures
+        "fuzz: {} random documents ({} parsed, {} rejected), {} corpus files, rockets {} rejected / {} accepted, missions {} ok / {} rejected, {} ascents, {} failures",
+        rounds, parsed, rejected, corpus_files, rocket_rejected, rocket_accepted, mission_ok, mission_err, ascents, failures
     );
     if failures > 0 {
         std::process::exit(1);
