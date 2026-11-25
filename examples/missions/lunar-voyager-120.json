@@ -1,0 +1,11 @@
+{
+  "mission": "lunar-voyager-120",
+  "description": "Late-epoch 120 km mission.",
+  "rocket_id": "voyager",
+  "lunar_altitude_km": 120,
+  "epoch_days": 9.5,
+  "moon_phase_deg": 45,
+  "sun_phase_deg": 225,
+  "parking_altitude_km": 400,
+  "tolerance": 0.01
+}
