@@ -733,6 +733,15 @@ $("add-stage").addEventListener("click", () => {
   updateSummary();
   validateSoon();
 });
+$("use-script-rocket").addEventListener("click", () => {
+  const script = state.scripts.find((s) => s.id === $("script-select").value);
+  if (!script) return;
+  const rocket = state.presets.find((r) => r.name.toLowerCase() === script.rocket_id);
+  if (rocket) {
+    selectPreset(rocket);
+    setText("mission-status", `loaded ${rocket.name} from ${script.id}`);
+  }
+});
 $("run-btn").addEventListener("click", runMission);
 $("demo-btn").addEventListener("click", () => {
   const script = state.scripts.find((s) => s.id === "lunar-atlas-100") || state.scripts[0];
